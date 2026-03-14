@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 /**
+ * 用户信息实体类
  * @Author : 青灯文案
  * @Date: 2026/3/13 23:52
  */
@@ -21,7 +22,7 @@ public class UserInfo {
     private Long id;
 
     /**
-     * 用户ID
+     * 用户 ID
      */
     private Long userId;
 
@@ -53,12 +54,57 @@ public class UserInfo {
     private String phone;
 
     /**
-     * 用户状态
+     * 性别 0-未知 1-男 2-女
+     */
+    private Integer gender;
+
+    /**
+     * 生日
+     */
+    private Long birthday;
+
+    /**
+     * 头像 URL
+     */
+    private String avatar;
+
+    /**
+     * 个人简介/签名
+     */
+    private String bio;
+
+    /**
+     * 国家
+     */
+    private String country;
+
+    /**
+     * 省份
+     */
+    private String province;
+
+    /**
+     * 城市
+     */
+    private String city;
+
+    /**
+     * 详细地址
+     */
+    private String address;
+
+    /**
+     * 邮政编码
+     */
+    private String zipCode;
+
+    /**
+     * 用户状态 0-禁用 1-正常
      */
     private Integer status;
 
     /**
-     * 用户是否注销  0 注销， 1 未注销
+     * 用户是否注销 0-注销 1-未注销
      */
     private Integer deleted;
 
@@ -71,6 +117,4 @@ public class UserInfo {
      * 修改时间
      */
     private Long updateTime;
-
-
 }
