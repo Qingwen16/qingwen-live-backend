@@ -10,6 +10,7 @@ import com.wen.model.dto.UserInfoResponse;
 import com.wen.model.dto.UserRegisterRequest;
 import com.wen.model.entity.UserInfo;
 import com.wen.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -21,17 +22,13 @@ import java.time.Instant;
  * @Date: 2026/3/14
  */
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserInfoMapper userInfoMapper;
 
-    public UserServiceImpl(UserInfoMapper userInfoMapper) {
-        this.userInfoMapper = userInfoMapper;
-    }
-
     @Override
     public UserInfoResponse register(UserRegisterRequest request) {
-
         // 参数校验
         if (StrUtil.isBlank(request.getUsername())) {
             throw new BusinessException("用户名不能为空");
@@ -40,14 +37,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("密码不能为空");
         }
 
-        // 允许用户名重复
-        UserInfo existUser = userInfoMapper.selectByPhone(request.getPhone());
-
-        if (existUser != null) {
-            throw new BusinessException("用户名已存在");
-        }
-
-        // 检查手机号是否已存在
+        // 允许用户名重复, 检查手机号是否已存在
         if (StrUtil.isNotBlank(request.getPhone())) {
             LambdaQueryWrapper<UserInfo> wrapper = new LambdaQueryWrapper<>();
             wrapper.eq(UserInfo::getPhone, request.getPhone())
