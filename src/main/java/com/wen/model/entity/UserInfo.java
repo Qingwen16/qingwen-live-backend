@@ -9,8 +9,6 @@ import lombok.Data;
 
 /**
  * 用户信息实体类
- * @Author : 青灯文案
- * @Date: 2026/3/13 23:52
  */
 @TableName("user_info")
 @Data
@@ -37,6 +35,11 @@ public class UserInfo {
     private String nickname;
 
     /**
+     * 头像 URL
+     */
+    private String avatar;
+
+    /**
      * 用户密码
      */
     @JsonIgnore
@@ -59,44 +62,14 @@ public class UserInfo {
     private Integer gender;
 
     /**
-     * 生日
+     * 微信 OpenID
      */
-    private Long birthday;
+    private String wechatOpenid;
 
     /**
-     * 头像 URL
+     * 微信 UnionID
      */
-    private String avatar;
-
-    /**
-     * 个人简介/签名
-     */
-    private String bio;
-
-    /**
-     * 国家
-     */
-    private String country;
-
-    /**
-     * 省份
-     */
-    private String province;
-
-    /**
-     * 城市
-     */
-    private String city;
-
-    /**
-     * 详细地址
-     */
-    private String address;
-
-    /**
-     * 邮政编码
-     */
-    private String zipCode;
+    private String wechatUnionId;
 
     /**
      * 用户状态 0-禁用 1-正常

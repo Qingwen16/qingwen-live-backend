@@ -22,4 +22,10 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
      * 根据手机号查询用户
      */
     UserInfo selectByPhone(@Param("phone") String phone);
+
+    /**
+     * 根据微信 OpenID 查询用户
+     */
+    UserInfo selectByWechatOpenid(@Param("wechatOpenid") String wechatOpenid);
+
 }

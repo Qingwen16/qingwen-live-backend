@@ -4,8 +4,6 @@ import lombok.Data;
 
 /**
  * 用户信息响应 DTO
- * @Author : 青灯文案
- * @Date: 2026/3/14
  */
 @Data
 public class UserInfoResponse {
@@ -16,6 +14,11 @@ public class UserInfoResponse {
     private Long id;
 
     /**
+     * 用户 ID
+     */
+    private Long userId;
+
+    /**
      * 用户名
      */
     private String username;
@@ -24,6 +27,16 @@ public class UserInfoResponse {
      * 昵称
      */
     private String nickname;
+
+    /**
+     * 头像
+     */
+    private String avatar;
+
+    /**
+     * 性别
+     */
+    private Integer gender;
 
     /**
      * 手机号
@@ -44,4 +57,9 @@ public class UserInfoResponse {
      * Token
      */
     private String token;
+
+    /**
+     * 是否新用户
+     */
+    private Boolean isNewUser;
 }
