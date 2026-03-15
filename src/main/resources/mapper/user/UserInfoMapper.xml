@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wen.module.user.mapper.UserInfoMapper">
+
+    <!--
+      说明：
+      所有简单查询都已移至 Mapper 接口中使用 Lambda 表达式
+      本 XML 仅保留基础 ResultMap
+      未来如有复杂查询（多表联查、动态 SQL）可在此添加
+    -->
+
+    <resultMap id="BaseResultMap" type="com.wen.module.user.model.entity.UserInfo">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="nickname" property="nickname"/>
+        <result column="avatar" property="avatar"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="gender" property="gender"/>
+        <result column="country" property="country"/>
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="zipCode" property="zipCode"/>
+        <result column="address" property="address"/>
+        <result column="password" property="password"/>
+        <result column="status" property="status"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+</mapper>
