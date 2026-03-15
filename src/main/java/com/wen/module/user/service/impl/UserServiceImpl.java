@@ -16,8 +16,8 @@ import com.wen.module.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 
 /**
@@ -82,44 +82,53 @@ public class UserServiceImpl implements UserService {
      * 创建通过第三方软件登录的用户
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UserInfo registerByAuth(String phone, AuthType authType) {
-        // 先查询是否存在
-        UserInfo userInfo = userInfoMapper.selectByPhone(phone);
+        // 1. 先查询是否存在（加锁或使用唯一索引）
+        List<UserInfo> userInfoList = userInfoMapper.selectList(
+                new LambdaQueryWrapper<UserInfo>()
+                        .eq(UserInfo::getPhone, phone)
+        );
 
-        if (userInfo != null && userInfo.getDeleted() == 1) {
-            // 老用户直接返回
-            log.info("手机号用户登录：{}", phone);
+        if (!userInfoList.isEmpty()) {
+            UserInfo userInfo = userInfoList.get(0);
             // 检查用户状态
             if (userInfo.getStatus() == UserStatus.DISABLED.getCode()) {
                 throw new BusinessException("账号已被禁用");
             }
-            // 检查用户状态
             if (userInfo.getDeleted() == DeleteStatus.DELETED.getCode()) {
                 throw new BusinessException("账号已被删除");
             }
+            log.info("手机号用户登录，用户信息：{}", userInfo);
             return userInfo;
         }
 
-        // 新用户自动注册
+        // 2. 新用户自动注册
         log.info("手机号用户注册：{}", phone);
         UserInfo createUser = new UserInfo();
         createUser.setUsername("phone_" + phone);
-        createUser.setNickname("手机用户_" + (phone.substring(7)));
+        createUser.setNickname("手机用户_" + (phone.length() > 7 ? phone.substring(7) : phone));
         createUser.setPhone(phone);
         createUser.setStatus(UserStatus.NORMAL.getCode());
         createUser.setDeleted(DeleteStatus.ACTIVE.getCode());
         createUser.setCreateTime(System.currentTimeMillis());
         createUser.setUpdateTime(System.currentTimeMillis());
+
         userInfoMapper.insert(createUser);
 
-        // 手动计算 userId（直接调用公式）
-        Long userId = USER_ID_START + userInfo.getId();
-        userInfo.setUserId(userId);
+        // 3. 生成并回写 userId
+        Long userId = USER_ID_START + createUser.getId();
+        createUser.setUserId(userId);
 
-        userInfoMapper.updateById(userInfo);  // 回写
-        log.info("手机号用户注册成功：{}", createUser);
+        int rows = userInfoMapper.updateById(createUser);
+        if (rows != 1) {
+            throw new BusinessException("更新用户 ID 失败");
+        }
+
+        log.info("手机号用户注册成功：userId={}", userId);
         return createUser;
     }
+
 
     @Override
     public UserInfoResponse queryByPhone(String phone) {
@@ -209,19 +218,19 @@ public class UserServiceImpl implements UserService {
             userInfo.setGender(request.getGender());
         }
         if (request.getCountry() != null) {
-             userInfo.setCountry(request.getCountry());
+            userInfo.setCountry(request.getCountry());
         }
         if (request.getProvince() != null) {
-             userInfo.setProvince(request.getProvince());
+            userInfo.setProvince(request.getProvince());
         }
         if (request.getCity() != null) {
-             userInfo.setCity(request.getCity());
+            userInfo.setCity(request.getCity());
         }
         if (request.getAddress() != null) {
-             userInfo.setAddress(request.getAddress());
+            userInfo.setAddress(request.getAddress());
         }
         if (request.getZipCode() != null) {
-             userInfo.setZipCode(request.getZipCode());
+            userInfo.setZipCode(request.getZipCode());
         }
     }
 
