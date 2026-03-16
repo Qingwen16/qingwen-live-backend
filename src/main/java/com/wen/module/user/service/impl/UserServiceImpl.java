@@ -4,9 +4,9 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.wen.module.auth.common.AuthType;
 import com.wen.common.exception.BusinessException;
-import com.wen.module.user.common.DeleteStatus;
+import com.wen.module.user.common.DeleteStatusEnum;
 import com.wen.module.user.common.UserIdGenerator;
-import com.wen.module.user.common.UserStatus;
+import com.wen.module.user.common.UserStatusEnum;
 import com.wen.module.user.mapper.UserInfoMapper;
 import com.wen.module.user.model.dto.UserInfoResponse;
 import com.wen.module.user.model.dto.UserRegisterRequest;
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
         if (StrUtil.isNotBlank(request.getPhone())) {
             Long count = userInfoMapper.selectCount(new LambdaQueryWrapper<UserInfo>()
                     .eq(UserInfo::getPhone, request.getPhone())
-                    .eq(UserInfo::getDeleted, DeleteStatus.ACTIVE.getCode())
+                    .eq(UserInfo::getDeleted, DeleteStatusEnum.ACTIVE.getCode())
             );
 
             if (count > 0) {
@@ -62,8 +62,8 @@ public class UserServiceImpl implements UserService {
         createUser.setUserId(UserIdGenerator.generator());
         // todo 密码未加密
         createUser.setPassword(request.getPassword());
-        createUser.setStatus(UserStatus.NORMAL.getCode());
-        createUser.setDeleted(DeleteStatus.ACTIVE.getCode());
+        createUser.setStatus(UserStatusEnum.NORMAL.getCode());
+        createUser.setDeleted(DeleteStatusEnum.ACTIVE.getCode());
         createUser.setCreateTime(System.currentTimeMillis());
         createUser.setUpdateTime(System.currentTimeMillis());
         userInfoMapper.insert(createUser);
@@ -86,10 +86,10 @@ public class UserServiceImpl implements UserService {
         if (!userInfoList.isEmpty()) {
             UserInfo userInfo = userInfoList.get(0);
             // 检查用户状态
-            if (userInfo.getStatus() == UserStatus.DISABLED.getCode()) {
+            if (userInfo.getStatus() == UserStatusEnum.DISABLED.getCode()) {
                 throw new BusinessException("账号已被禁用");
             }
-            if (userInfo.getDeleted() == DeleteStatus.DELETED.getCode()) {
+            if (userInfo.getDeleted() == DeleteStatusEnum.DELETED.getCode()) {
                 throw new BusinessException("账号已被删除");
             }
             log.info("手机号用户登录，用户信息：{}", userInfo);
@@ -103,8 +103,8 @@ public class UserServiceImpl implements UserService {
         createUser.setUsername("phone_" + phone);
         createUser.setNickname("手机用户_" + (phone.length() > 7 ? phone.substring(7) : phone));
         createUser.setPhone(phone);
-        createUser.setStatus(UserStatus.NORMAL.getCode());
-        createUser.setDeleted(DeleteStatus.ACTIVE.getCode());
+        createUser.setStatus(UserStatusEnum.NORMAL.getCode());
+        createUser.setDeleted(DeleteStatusEnum.ACTIVE.getCode());
         createUser.setCreateTime(System.currentTimeMillis());
         createUser.setUpdateTime(System.currentTimeMillis());
         userInfoMapper.insert(createUser);

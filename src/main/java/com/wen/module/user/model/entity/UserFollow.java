@@ -26,14 +26,14 @@ public class UserFollow {
     private Long userId;
 
     /**
-     * 被关注对象 ID（主播 ID）
+     * 被关注对象 ID
      */
-    private Long targetId;
+    private Long followId;
 
     /**
-     * 关注类型 1-关注主播 2-关注用户
+     * 是否关注 0-否 1-是
      */
-    private Integer followType;
+    private Integer isFollow;
 
     /**
      * 粉丝牌等级

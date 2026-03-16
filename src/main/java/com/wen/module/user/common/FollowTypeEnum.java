@@ -4,21 +4,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 用户删除状态枚举
- * @author jwruan
+ * @Author : 青灯文案
+ * @Date: 2026/3/16 20:47
  */
 @AllArgsConstructor
 @Getter
-public enum DeleteStatus {
+public enum FollowTypeEnum {
 
     /**
      * 用户信息的状态
      */
-    DELETED(0, "已注销"),
+    UNFOLLOW(0, "未关注"),
 
-    ACTIVE(1, "未注销");
+    FOLLOW(1, "关注");
 
     private final int code;
 
     private final String desc;
+
 }

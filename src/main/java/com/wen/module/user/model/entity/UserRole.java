@@ -28,14 +28,14 @@ public class UserRole implements Serializable {
     private Long userId;
 
     /**
-     * 公司名称
+     * 用户名字
      */
-    private String company;
+    private Long userName;
 
     /**
-     * 公司ID
+     * 用户手机
      */
-    private String companyId;
+    private String phone;
 
     /**
      * 角色类型
