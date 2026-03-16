@@ -1,4 +1,4 @@
-package com.wen.module.user.common.utils;
+package com.wen.module.auth.common;
 
 import java.util.UUID;
 
@@ -6,12 +6,12 @@ import java.util.UUID;
  * Token 生成工具类
  * 用于生成用户登录凭证
  */
-public class TokenUtils {
+public class TokenGenerator {
 
     /**
      * Token 前缀（用于识别 Token 类型）
      */
-    private static final String TOKEN_PREFIX = "tk_";
+    private static final String TOKEN_PREFIX = "token_";
 
     /**
      * 生成用户登录 Token

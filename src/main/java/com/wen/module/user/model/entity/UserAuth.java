@@ -3,7 +3,7 @@ package com.wen.module.user.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.wen.module.auth.constant.AuthType;
+import com.wen.module.auth.common.AuthType;
 import lombok.Data;
 
 /**

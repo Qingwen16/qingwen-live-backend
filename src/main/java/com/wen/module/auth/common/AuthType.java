@@ -1,4 +1,4 @@
-package com.wen.module.auth.constant;
+package com.wen.module.auth.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

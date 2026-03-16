@@ -1,6 +1,6 @@
-package com.wen.module.auth.utils;
+package com.wen.module.auth.common;
 
-import com.wen.module.auth.constant.AuthType;
+import com.wen.module.auth.common.AuthType;
 import com.wen.common.exception.BusinessException;
 import com.wen.module.auth.model.dto.LoginRequest;
 import com.wen.module.user.model.dto.UserInfoResponse;

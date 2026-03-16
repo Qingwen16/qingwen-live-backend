@@ -2,11 +2,11 @@ package com.wen.module.user.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.wen.module.auth.constant.AuthType;
+import com.wen.module.auth.common.AuthType;
 import com.wen.common.exception.BusinessException;
-import com.wen.module.user.common.constant.DeleteStatus;
-import com.wen.module.user.common.constant.UserStatus;
-import com.wen.module.user.common.utils.TokenUtils;
+import com.wen.module.user.common.DeleteStatus;
+import com.wen.module.user.common.UserIdGenerator;
+import com.wen.module.user.common.UserStatus;
 import com.wen.module.user.mapper.UserInfoMapper;
 import com.wen.module.user.model.dto.UserInfoResponse;
 import com.wen.module.user.model.dto.UserRegisterRequest;
@@ -59,21 +59,14 @@ public class UserServiceImpl implements UserService {
 
         // 创建用户
         UserInfo createUser = new UserInfo();
+        createUser.setUserId(UserIdGenerator.generator());
         // todo 密码未加密
         createUser.setPassword(request.getPassword());
         createUser.setStatus(UserStatus.NORMAL.getCode());
         createUser.setDeleted(DeleteStatus.ACTIVE.getCode());
         createUser.setCreateTime(System.currentTimeMillis());
         createUser.setUpdateTime(System.currentTimeMillis());
-
         userInfoMapper.insert(createUser);
-
-        // 手动计算 userId（直接调用公式）
-        Long userId = USER_ID_START + createUser.getId();
-        createUser.setUserId(userId);
-
-        userInfoMapper.updateById(createUser);  // 回写
-
         // 返回用户信息
         return buildUserInfoResponse(createUser);
     }
@@ -106,6 +99,7 @@ public class UserServiceImpl implements UserService {
         // 2. 新用户自动注册
         log.info("手机号用户注册：{}", phone);
         UserInfo createUser = new UserInfo();
+        createUser.setUserId(UserIdGenerator.generator());
         createUser.setUsername("phone_" + phone);
         createUser.setNickname("手机用户_" + (phone.length() > 7 ? phone.substring(7) : phone));
         createUser.setPhone(phone);
@@ -113,22 +107,10 @@ public class UserServiceImpl implements UserService {
         createUser.setDeleted(DeleteStatus.ACTIVE.getCode());
         createUser.setCreateTime(System.currentTimeMillis());
         createUser.setUpdateTime(System.currentTimeMillis());
-
         userInfoMapper.insert(createUser);
-
-        // 3. 生成并回写 userId
-        Long userId = USER_ID_START + createUser.getId();
-        createUser.setUserId(userId);
-
-        int rows = userInfoMapper.updateById(createUser);
-        if (rows != 1) {
-            throw new BusinessException("更新用户 ID 失败");
-        }
-
-        log.info("手机号用户注册成功：userId={}", userId);
+        log.info("手机号用户注册成功：createUser={}", createUser);
         return createUser;
     }
-
 
     @Override
     public UserInfoResponse queryByPhone(String phone) {
@@ -232,13 +214,6 @@ public class UserServiceImpl implements UserService {
         if (request.getZipCode() != null) {
             userInfo.setZipCode(request.getZipCode());
         }
-    }
-
-    /**
-     * 生成 Token（简化版本，生产环境建议使用 JWT）
-     */
-    private String generateToken(Long userId) {
-        return TokenUtils.generateToken(userId);
     }
 
     /**

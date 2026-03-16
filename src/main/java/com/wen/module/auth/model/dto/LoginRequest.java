@@ -1,6 +1,6 @@
 package com.wen.module.auth.model.dto;
 
-import com.wen.module.auth.constant.AuthType;
+import com.wen.module.auth.common.AuthType;
 import lombok.Data;
 
 /**
