@@ -5,13 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.wen.common.utils.UserContext;
 import com.wen.module.auth.common.AuthType;
 import com.wen.common.exception.BusinessException;
+import com.wen.module.auth.common.TokenGenerator;
 import com.wen.module.auth.mapper.SMSCodeMapper;
 import com.wen.module.user.mapper.UserInfoMapper;
 import com.wen.module.auth.model.dto.LoginRequest;
 import com.wen.module.user.model.dto.UserInfoResponse;
 import com.wen.module.auth.model.entity.SMSCode;
 import com.wen.module.user.model.entity.UserInfo;
-import com.wen.module.auth.common.AuthTokenGenerator;
 import com.wen.module.auth.service.LoginHandler;
 import com.wen.module.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +35,6 @@ public class SMSCodeLoginHandler implements LoginHandler {
     private final UserInfoMapper userInfoMapper;
 
     private final SMSCodeMapper smsCodeMapper;
-
-    private final AuthTokenGenerator tokenGenerator;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -141,7 +139,7 @@ public class SMSCodeLoginHandler implements LoginHandler {
         response.setPhone(userInfo.getPhone());
         response.setEmail(userInfo.getEmail());
         response.setStatus(userInfo.getStatus());
-        response.setToken(tokenGenerator.generate(userInfo.getId()));
+        response.setToken(TokenGenerator.generateToken(userInfo.getId()));
         return response;
     }
 }
