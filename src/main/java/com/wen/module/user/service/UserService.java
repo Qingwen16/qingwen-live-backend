@@ -1,6 +1,6 @@
 package com.wen.module.user.service;
 
-import com.wen.module.auth.constant.AuthType;
+import com.wen.module.auth.common.AuthType;
 import com.wen.module.user.model.dto.UserInfoResponse;
 import com.wen.module.user.model.dto.UserRegisterRequest;
 import com.wen.module.user.model.dto.UserUpdateRequest;

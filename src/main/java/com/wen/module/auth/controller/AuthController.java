@@ -1,12 +1,16 @@
 package com.wen.module.auth.controller;
 
 import com.wen.common.response.Response;
+import com.wen.common.utils.UserContext;
+import com.wen.module.auth.common.AuthType;
+import com.wen.module.auth.common.LoginFactory;
 import com.wen.module.auth.model.dto.LoginRequest;
 import com.wen.module.user.model.dto.UserInfoResponse;
 import com.wen.module.auth.service.SMSCodeService;
-import com.wen.module.auth.utils.LoginFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 认证控制器
@@ -17,7 +21,17 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final LoginFactory loginFactory;
+
     private final SMSCodeService smsCodeService;
+
+    /**
+     * 注册接口
+     */
+    @PostMapping("/register")
+    public Response<UserInfoResponse> register(@RequestBody LoginRequest request) {
+        UserInfoResponse response = loginFactory.executeLogin(request);
+        return Response.success(response);
+    }
 
     /**
      * 统一登录接口
@@ -45,6 +59,25 @@ public class AuthController {
      */
     @GetMapping("/login/types")
     public Response<Object> getLoginTypes() {
-        return Response.success(loginFactory.getSupportedTypes());
+        List<AuthType> result = loginFactory.getSupportedTypes();
+        return Response.success(result);
+    }
+
+    /**
+     * 统一登录接口
+     */
+    @PostMapping("/logout")
+    public Response<UserInfoResponse> logout() {
+        // 删除用户，过期token
+        UserContext.clear();
+        return Response.success();
+    }
+
+    /**
+     * 刷新令牌
+     */
+    @PostMapping("/refresh")
+    public Response<UserInfoResponse> refresh() {
+        return Response.success();
     }
 }

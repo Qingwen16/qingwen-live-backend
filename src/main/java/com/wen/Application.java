@@ -9,11 +9,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @Date: 2026/3/9 22:53
  */
 @SpringBootApplication
-@MapperScan("com.wen.mapper")
-public class WenApplication {
+@MapperScan("com.wen.module.**.mapper")
+public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(WenApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
 }

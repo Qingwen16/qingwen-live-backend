@@ -1,4 +1,4 @@
-package com.wen.module.auth.constant;
+package com.wen.module.auth.common;
 
 /**
  * 第三方登录配置常量

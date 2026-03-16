@@ -2,11 +2,9 @@ package com.wen.module.user.controller;
 
 import com.wen.common.exception.BusinessException;
 import com.wen.common.response.Response;
-import com.wen.module.user.mapper.UserInfoMapper;
+import com.wen.module.user.model.dto.UpdatePasswordRequest;
 import com.wen.module.user.model.dto.UserUpdateRequest;
 import com.wen.module.user.model.dto.UserInfoResponse;
-import com.wen.module.user.model.dto.UserRegisterRequest;
-import com.wen.module.user.model.entity.UserInfo;
 import com.wen.module.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
@@ -19,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * @Date: 2026/3/14
  */
 @RestController
-@RequestMapping("/userInfo")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -57,5 +55,18 @@ public class UserController {
         String result = userService.updateUserInfo(request);
         return Response.success(result);
     }
+
+    /**
+     * 修改用户信息（根据用户ID和手机号查询信息，用户ID和手机号不允许更改，手机号可以重新注册或者解绑）
+     */
+    @PostMapping("/updatePassword")
+    public Response<String> updatePassword(@RequestBody UpdatePasswordRequest request) {
+        if (request == null) {
+            throw new BusinessException("输入参数不能为空");
+        }
+        return Response.success();
+    }
+
+
 
 }
