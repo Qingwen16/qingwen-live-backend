@@ -3,14 +3,14 @@ package com.wen.module.auth.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.wen.common.utils.UserContext;
-import com.wen.module.auth.common.AuthType;
+import com.wen.module.auth.common.AuthTypeEnum;
 import com.wen.common.exception.BusinessException;
 import com.wen.module.auth.common.TokenGenerator;
-import com.wen.module.auth.mapper.SMSCodeMapper;
+import com.wen.module.auth.mapper.SmsCodeMapper;
+import com.wen.module.auth.model.entity.SmsCode;
 import com.wen.module.user.mapper.UserInfoMapper;
 import com.wen.module.auth.model.dto.LoginRequest;
 import com.wen.module.user.model.dto.UserInfoResponse;
-import com.wen.module.auth.model.entity.SMSCode;
 import com.wen.module.user.model.entity.UserInfo;
 import com.wen.module.auth.service.LoginHandler;
 import com.wen.module.user.service.UserService;
@@ -28,13 +28,13 @@ import java.time.Instant;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SMSCodeLoginHandler implements LoginHandler {
+public class SmsCodeLoginHandler implements LoginHandler {
 
     private final UserService userService;
 
     private final UserInfoMapper userInfoMapper;
 
-    private final SMSCodeMapper smsCodeMapper;
+    private final SmsCodeMapper SmsCodeMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -49,7 +49,7 @@ public class SMSCodeLoginHandler implements LoginHandler {
         verifyCode(phone, code);
 
         // 3. 查询或创建用户
-        UserInfo userInfo = userService.registerByAuth(phone, AuthType.PHONE);
+        UserInfo userInfo = userService.registerByAuth(phone, AuthTypeEnum.PHONE);
 
         // 4. 登录成功，将用户信息存入本地
         UserContext.setUserInfo(userInfo);
@@ -62,8 +62,8 @@ public class SMSCodeLoginHandler implements LoginHandler {
     }
 
     @Override
-    public AuthType getSupportedType() {
-        return AuthType.PHONE;
+    public AuthTypeEnum getSupportedType() {
+        return AuthTypeEnum.PHONE;
     }
 
     /**
@@ -87,15 +87,15 @@ public class SMSCodeLoginHandler implements LoginHandler {
      * 验证验证码
      */
     private void verifyCode(String phone, String code) {
-        LambdaQueryWrapper<SMSCode> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SMSCode::getPhone, phone)
-               .eq(SMSCode::getCode, code)
-               .eq(SMSCode::getStatus, 0) // 未使用
-               .gt(SMSCode::getExpireTime, Instant.now().toEpochMilli()) // 未过期
-               .orderByDesc(SMSCode::getCreateTime)
+        LambdaQueryWrapper<SmsCode> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SmsCode::getPhone, phone)
+               .eq(SmsCode::getCode, code)
+               .eq(SmsCode::getStatus, 0) // 未使用
+               .gt(SmsCode::getExpireTime, Instant.now().toEpochMilli()) // 未过期
+               .orderByDesc(SmsCode::getCreateTime)
                .last("LIMIT 1");
 
-        SMSCode verificationCode = smsCodeMapper.selectOne(wrapper);
+        SmsCode verificationCode = SmsCodeMapper.selectOne(wrapper);
 
         if (verificationCode == null) {
             throw new BusinessException("验证码错误或已过期");
@@ -106,18 +106,18 @@ public class SMSCodeLoginHandler implements LoginHandler {
      * 标记验证码已使用
      */
     private void markCodeAsUsed(String phone, String code) {
-        LambdaQueryWrapper<SMSCode> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SMSCode::getPhone, phone)
-               .eq(SMSCode::getCode, code)
-               .eq(SMSCode::getStatus, 0)
-               .orderByDesc(SMSCode::getCreateTime)
+        LambdaQueryWrapper<SmsCode> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SmsCode::getPhone, phone)
+               .eq(SmsCode::getCode, code)
+               .eq(SmsCode::getStatus, 0)
+               .orderByDesc(SmsCode::getCreateTime)
                .last("LIMIT 1");
 
-        SMSCode smsCode = smsCodeMapper.selectOne(wrapper);
-        if (smsCode != null) {
-            smsCode.setStatus(1); // 已使用
-            smsCode.setUsedTime(Instant.now().toEpochMilli());
-            smsCodeMapper.updateById(smsCode);
+        SmsCode SmsCode = SmsCodeMapper.selectOne(wrapper);
+        if (SmsCode != null) {
+            SmsCode.setStatus(1); // 已使用
+            SmsCode.setUsedTime(Instant.now().toEpochMilli());
+            SmsCodeMapper.updateById(SmsCode);
         }
     }
 

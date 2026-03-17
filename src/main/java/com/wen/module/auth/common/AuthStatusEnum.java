@@ -10,26 +10,17 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum AuthStatus {
+public enum AuthStatusEnum {
 
     /**
-     * 未绑定
+     * 授权状态枚举
      */
     UNBOUND(0, "未绑定"),
 
-    /**
-     * 已绑定
-     */
     BOUND(1, "已绑定"),
 
-    /**
-     * 授权过期
-     */
     EXPIRED(2, "授权过期"),
 
-    /**
-     * 授权失败
-     */
     FAILED(3, "授权失败");
 
     private final Integer code;

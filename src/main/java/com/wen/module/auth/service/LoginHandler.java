@@ -1,6 +1,6 @@
 package com.wen.module.auth.service;
 
-import com.wen.module.auth.common.AuthType;
+import com.wen.module.auth.common.AuthTypeEnum;
 import com.wen.module.auth.model.dto.LoginRequest;
 import com.wen.module.user.model.dto.UserInfoResponse;
 
@@ -20,5 +20,5 @@ public interface LoginHandler {
     /**
      * 获取支持的登录类型
      */
-    AuthType getSupportedType();
+    AuthTypeEnum getSupportedType();
 }

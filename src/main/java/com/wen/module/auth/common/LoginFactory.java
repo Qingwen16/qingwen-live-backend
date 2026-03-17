@@ -1,6 +1,5 @@
 package com.wen.module.auth.common;
 
-import com.wen.module.auth.common.AuthType;
 import com.wen.common.exception.BusinessException;
 import com.wen.module.auth.model.dto.LoginRequest;
 import com.wen.module.user.model.dto.UserInfoResponse;
@@ -26,8 +25,10 @@ public class LoginFactory {
 
     private final List<LoginHandler> loginHandlers;
 
-    // 缓存处理器映射关系
-    private Map<AuthType, LoginHandler> handlerMap;
+    /**
+     * 缓存处理器映射关系
+     */
+    private Map<AuthTypeEnum, LoginHandler> handlerMap;
 
     /**
      * 初始化处理器映射
@@ -50,25 +51,27 @@ public class LoginFactory {
     public UserInfoResponse executeLogin(LoginRequest request) {
         initHandlerMap();
 
-        AuthType authType = request.getAuthType();
-        if (authType == null) {
+        AuthTypeEnum authTypeEnum = request.getAuthTypeEnum();
+        if (authTypeEnum == null) {
             throw new BusinessException("登录类型不能为空");
         }
 
-        LoginHandler handler = handlerMap.get(authType);
+        LoginHandler handler = handlerMap.get(authTypeEnum);
         if (handler == null) {
-            throw new BusinessException("暂不支持该登录方式：" + authType);
+            throw new BusinessException("暂不支持该登录方式：" + authTypeEnum);
         }
 
-        log.info("执行登录，类型：{}", authType);
+        log.info("执行登录，类型：{}", authTypeEnum);
         return handler.login(request);
     }
 
     /**
      * 获取所有支持的登录方式
      */
-    public List<AuthType> getSupportedTypes() {
+    public List<AuthTypeEnum> getSupportedTypes() {
         initHandlerMap();
         return new ArrayList<>(handlerMap.keySet());
     }
 }
+
+

@@ -1,6 +1,6 @@
 package com.wen.module.auth.model.dto;
 
-import com.wen.module.auth.common.AuthType;
+import com.wen.module.auth.common.AuthTypeEnum;
 import lombok.Data;
 
 /**
@@ -16,7 +16,7 @@ public class LoginRequest {
      * WECHAT - 微信（暂未实现）
      * PASSWORD - 密码（暂未实现）
      */
-    private AuthType authType;
+    private AuthTypeEnum authTypeEnum;
 
     /**
      * 登录凭证
