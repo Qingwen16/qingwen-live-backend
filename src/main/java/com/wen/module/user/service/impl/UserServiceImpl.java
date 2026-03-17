@@ -2,7 +2,7 @@ package com.wen.module.user.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.wen.module.auth.common.AuthType;
+import com.wen.module.auth.common.AuthTypeEnum;
 import com.wen.common.exception.BusinessException;
 import com.wen.module.user.common.DeleteStatusEnum;
 import com.wen.module.user.common.UserIdGenerator;
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UserInfo registerByAuth(String phone, AuthType authType) {
+    public UserInfo registerByAuth(String phone, AuthTypeEnum authTypeEnum) {
         // 1. 先查询是否存在（加锁或使用唯一索引）
         List<UserInfo> userInfoList = userInfoMapper.selectList(
                 new LambdaQueryWrapper<UserInfo>()

@@ -7,7 +7,7 @@ import lombok.Data;
  * @Date: 2026/3/14 17:28
  */
 @Data
-public class SMSCodeRequest {
+public class SmsCodeRequest {
 
     /**
      * 手机号
@@ -17,5 +17,10 @@ public class SMSCodeRequest {
     /**
      * 验证码类型 1-注册登录 2-绑定手机 3-找回密码
      */
-    private Integer type = 1;
+    private Integer type;
+
+    /**
+     * 验证码发送地址IP
+     */
+    private String ip;
 }

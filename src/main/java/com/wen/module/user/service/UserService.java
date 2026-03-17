@@ -1,6 +1,6 @@
 package com.wen.module.user.service;
 
-import com.wen.module.auth.common.AuthType;
+import com.wen.module.auth.common.AuthTypeEnum;
 import com.wen.module.user.model.dto.UserInfoResponse;
 import com.wen.module.user.model.dto.UserRegisterRequest;
 import com.wen.module.user.model.dto.UserUpdateRequest;
@@ -21,7 +21,7 @@ public interface UserService {
     /**
      * 用户注册（手机等第三方注册）
      */
-    UserInfo registerByAuth(String phone, AuthType authType);
+    UserInfo registerByAuth(String phone, AuthTypeEnum authTypeEnum);
 
     /**
      * 根据 手机号 获取用户信息

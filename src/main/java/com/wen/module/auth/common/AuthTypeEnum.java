@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum AuthType {
+public enum AuthTypeEnum {
 
     /**
      * 密码

@@ -1,7 +1,7 @@
 package com.wen.module.auth.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wen.module.auth.model.entity.SMSCode;
+import com.wen.module.auth.model.entity.SmsCode;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -10,5 +10,5 @@ import org.apache.ibatis.annotations.Mapper;
  * 手机号验证码 Mapper
  */
 @Mapper
-public interface SMSCodeMapper extends BaseMapper<SMSCode> {
+public interface SmsCodeMapper extends BaseMapper<SmsCode> {
 }
