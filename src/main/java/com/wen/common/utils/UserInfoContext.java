@@ -1,23 +1,23 @@
 package com.wen.common.utils;
 
-import com.wen.module.user.model.entity.UserInfo;
+import com.wen.module.user.model.dto.UserInfoDto;
 
 /**
  * 用户上下文工具类
  * 使用 ThreadLocal 存储当前请求的用户信息
  */
-public class UserContext {
+public class UserInfoContext {
 
     /**
      * 当前登录用户（null 表示游客）
      */
-    private static final ThreadLocal<UserInfo> CURRENT_USER = new ThreadLocal<>();
+    private static final ThreadLocal<UserInfoDto> CURRENT_USER = new ThreadLocal<>();
 
     /**
      * 设置当前登录用户
      * @param userInfo 用户
      */
-    public static void setUserInfo(UserInfo userInfo) {
+    public static void setUserInfo(UserInfoDto userInfo) {
         CURRENT_USER.set(userInfo);
     }
 
@@ -25,7 +25,7 @@ public class UserContext {
      * 获取当前登录用户
      * @return 用户，如果是游客返回 null
      */
-    public static UserInfo getUserInfo() {
+    public static UserInfoDto getUserInfo() {
         return CURRENT_USER.get();
     }
 

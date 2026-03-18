@@ -4,9 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.wen.common.exception.BusinessException;
 import com.wen.config.CacheConfig;
 import com.wen.module.auth.common.AuthConstants;
-import com.wen.module.auth.common.SmsCodeStatusEnum;
 import com.wen.module.auth.mapper.SmsCodeMapper;
-import com.wen.module.auth.model.dto.SmsCodeCacheDto;
 import com.wen.module.auth.model.dto.SmsCodeRequest;
 import com.wen.module.auth.model.entity.SmsCode;
 import com.wen.module.auth.service.CacheService;
@@ -25,8 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class SmsCodeServiceImpl implements SmsCodeService {
-
-    private final CacheConfig cacheConfig;
 
     private final CacheService cacheService;
 
@@ -47,7 +43,7 @@ public class SmsCodeServiceImpl implements SmsCodeService {
         }
 
         // 2. 不考虑发送次数检查，只检查发送间隔
-        if (cacheService.isInSendInterval(request.getPhone())) {
+        if (cacheService.getSendSmsCodeInterval(request.getPhone())) {
             throw new RuntimeException("发送过于频繁，请" + AuthConstants.SMS_CODE_SEND_INTERVAL_SECONDS + "秒后再试");
         }
 
@@ -57,8 +53,9 @@ public class SmsCodeServiceImpl implements SmsCodeService {
         SmsCode smsCode = createSmsCode(request, code, currentTime);
         smsCodeMapper.insert(smsCode);
 
-        SmsCodeCacheDto cacheDto = createSmsCodeCacheDto(request, code, currentTime);
-        cacheService.saveSmsCodeCacheDto(cacheDto);
+        // 存缓存验证码，存缓存这个手机发送验证码的时间间隔
+        cacheService.setSmsCodeCache(request.getPhone(), code);
+        cacheService.setSendSmsCodeInterval(request.getPhone());
 
         // 3. 调用短信服务商发送短信
         sendSmsCode(request.getPhone(), code);
@@ -85,29 +82,11 @@ public class SmsCodeServiceImpl implements SmsCodeService {
         smsCode.setPhone(request.getPhone());
         smsCode.setCode(code);
         smsCode.setType(request.getType());
-        smsCode.setStatus(SmsCodeStatusEnum.UNUSED.getCode());
         smsCode.setSendIp(request.getIp());
-        smsCode.setUsedIp(request.getIp());
         smsCode.setExpireTime(currentTime + AuthConstants.SMS_CODE_EXPIRE_MINUTES * 60 * 1000);
-        smsCode.setRetryCount(AuthConstants.SMS_CODE_MAX_RETRY_COUNT);
         smsCode.setUpdateTime(currentTime);
         smsCode.setCreateTime(currentTime);
         return smsCode;
-    }
-
-    /**
-     * 创建缓存数据
-     */
-    private SmsCodeCacheDto createSmsCodeCacheDto(SmsCodeRequest request, String code, long currentTime) {
-        SmsCodeCacheDto cacheDto = new SmsCodeCacheDto();
-        cacheDto.setCode(code);
-        cacheDto.setType(request.getType());
-        cacheDto.setStatus(SmsCodeStatusEnum.UNUSED.getCode());
-        cacheDto.setPhone(request.getPhone());
-        cacheDto.setExpireTime(currentTime + AuthConstants.SMS_CODE_EXPIRE_MINUTES * 60 * 1000);
-        cacheDto.setRetryCount(AuthConstants.SMS_CODE_MAX_RETRY_COUNT);
-        cacheDto.setCreateTime(currentTime);
-        return cacheDto;
     }
 
     /**

@@ -9,7 +9,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum DeleteStatusEnum {
+public enum UserDeleteEnum {
 
     /**
      * 用户信息的状态

@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
  * @Date: 2026/3/14
  */
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("sms_code")
@@ -42,21 +41,6 @@ public class SmsCode {
     private Integer type;
 
     /**
-     * 状态：0-未使用 1-已使用 2-已过期
-     */
-    private Integer status;
-
-    /**
-     * 过期时间（毫秒时间戳）
-     */
-    private Long expireTime;
-
-    /**
-     * 使用时间（毫秒时间戳）
-     */
-    private Long usedTime;
-
-    /**
      * 发送IP地址（用于安全防护）
      */
     private String sendIp;
@@ -67,9 +51,14 @@ public class SmsCode {
     private String usedIp;
 
     /**
-     * 重试次数（验证失败次数）
+     * 使用时间（毫秒时间戳）
      */
-    private Integer retryCount;
+    private Long usedTime;
+
+    /**
+     * 过期时间（毫秒时间戳）
+     */
+    private Long expireTime;
 
     /**
      * 创建时间（毫秒时间戳）

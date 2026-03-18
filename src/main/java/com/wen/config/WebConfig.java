@@ -14,27 +14,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-    private AuthInterceptor authInterceptor;
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .maxAge(3600);
-    }
+    private final AuthInterceptor authInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns(
-                    "/login/**",      // 登录接口
-                    "/auth/**",       // 认证接口
-                    "/logout/**",     // 登出接口
-                    "/error",         // 错误页面
-                    "/favicon.ico"    // 图标
+                .addPathPatterns("/**")           // 拦截所有接口
+                .excludePathPatterns(                 // 排除登录注册等接口
+                        "/**/auth/**"
                 );
     }
 }

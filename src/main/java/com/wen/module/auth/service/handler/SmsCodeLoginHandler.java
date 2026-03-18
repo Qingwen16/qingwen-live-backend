@@ -1,20 +1,20 @@
 package com.wen.module.auth.service.handler;
 
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.wen.common.exception.BusinessException;
-import com.wen.common.utils.UserContext;
+import com.wen.common.generator.TokenGenerator;
+import com.wen.common.utils.UserInfoContext;
 import com.wen.module.auth.common.*;
 import com.wen.module.auth.mapper.SmsCodeMapper;
 import com.wen.module.auth.model.dto.LoginRequest;
-import com.wen.module.auth.model.dto.SmsCodeCacheDto;
 import com.wen.module.auth.model.entity.SmsCode;
 import com.wen.module.auth.service.CacheService;
 import com.wen.module.auth.service.LoginHandler;
-import com.wen.module.user.mapper.UserInfoMapper;
+import com.wen.module.user.common.UserDeleteEnum;
+import com.wen.module.user.common.UserStatusEnum;
+import com.wen.module.user.model.dto.UserInfoDto;
 import com.wen.module.user.model.dto.UserInfoResponse;
-import com.wen.module.user.model.entity.UserInfo;
 import com.wen.module.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,37 +30,37 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SmsCodeLoginHandler implements LoginHandler {
 
+    private final TokenGenerator tokenGenerator;
+
     private final CacheService cacheService;
 
     private final UserService userService;
 
-    private final UserInfoMapper userInfoMapper;
-
     private final SmsCodeMapper smsCodeMapper;
 
+    /**
+     * 用户获取到了验证码进行登录（如果存在该手机的用户直接登录，没有就直接注册）
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserInfoResponse login(LoginRequest request) {
         String phone = request.getCredential();
         String code = request.getVerification();
-
+        String ip = request.getIp();
         // 1. 参数校验
         validateParams(phone, code);
-
         // 2. 验证验证码
-        verifyCode(phone, code);
-
-        // 3. 查询或创建用户
-        UserInfo userInfo = userService.registerByAuth(phone, AuthTypeEnum.PHONE);
-
+        verifyCode(phone, code, ip);
+        // 3. 查询用户
+        UserInfoDto userInfoDto = buildUserInfoDto(phone);
         // 4. 登录成功，将用户信息存入本地
-        UserContext.setUserInfo(userInfo);
-
-        // 4. 标记验证码已使用
-        markCodeAsUsed(phone, code);
-
+        UserInfoContext.setUserInfo(userInfoDto);
+        // 2. 生成 Token
+        String token = tokenGenerator.generateToken(userInfoDto.getUserId(), userInfoDto.getPhone());
         // 5. 构建响应
-        return buildLoginResponse(userInfo);
+        UserInfoResponse response = new UserInfoResponse();
+        response.setUserInfoDto(userInfoDto);
+        return response;
     }
 
     /**
@@ -89,79 +89,45 @@ public class SmsCodeLoginHandler implements LoginHandler {
     /**
      * 验证验证码
      */
-    private void verifyCode(String phone, String code) {
-        int type = SmsCodeTypeEnum.PHONE_LOGIN.getCode();
-        SmsCodeCacheDto cacheDto = cacheService.getSmsCodeCacheDto(phone, type);
-        if (cacheDto == null) {
-            throw new BusinessException("验证码存在问题");
+    private void verifyCode(String phone, String code, String ip) {
+        // 缓存获取验证码
+        String cacheCode = cacheService.getSmsCodeCache(phone);
+        if (cacheCode == null) {
+            throw new BusinessException("验证码存在问题，请重新发送验证码");
         }
-        // 验证码一致
-        if (code.equals(cacheDto.getCode())) {
-            // 判断是否过期
-            Long expireTime = cacheDto.getExpireTime();
-            if (System.currentTimeMillis() > expireTime) {
-                throw new BusinessException("验证码已过期");
-            }
-            // 判断是不是已使用
-            if (cacheDto.getStatus() == SmsCodeStatusEnum.USED.getCode()) {
-                throw new BusinessException("验证码已被使用");
-            }
-            long currentTime = System.currentTimeMillis();
-            // 设置验证码被使用
-            LambdaUpdateWrapper<SmsCode> updateWrapper = new LambdaUpdateWrapper<>();
-            updateWrapper.eq(SmsCode::getPhone, phone)
-                    .eq(SmsCode::getCode, code)
-                    .set(SmsCode::getUsedTime, currentTime)
-                    .set(SmsCode::getUsedIp, "")
-                    .set(SmsCode::getStatus, SmsCodeStatusEnum.USED.getCode());
-            smsCodeMapper.update(updateWrapper);
-            // 更新缓存
-            cacheDto.setStatus(SmsCodeStatusEnum.USED.getCode());
-
-        } else {
-            throw new BusinessException("验证码错误");
+        if (!cacheCode.equals(code)) {
+            throw new BusinessException("验证码存在问题，请重新发送验证码");
         }
-
-    }
-
-    /**
-     * 标记验证码已使用
-     */
-    private void markCodeAsUsed(String phone, String code) {
-        LambdaQueryWrapper<SmsCode> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SmsCode::getPhone, phone)
+        long currentTime = System.currentTimeMillis();
+        // 设置验证码被使用
+        LambdaUpdateWrapper<SmsCode> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(SmsCode::getPhone, phone)
                 .eq(SmsCode::getCode, code)
-                .eq(SmsCode::getStatus, 0)
-                .orderByDesc(SmsCode::getCreateTime)
-                .last("LIMIT 1");
-
-        SmsCode smsCode = smsCodeMapper.selectOne(wrapper);
-        if (smsCode != null) {
-            smsCode.setStatus(1); // 已使用
-            smsCode.setUsedTime(System.currentTimeMillis());
-            smsCodeMapper.updateById(smsCode);
-        }
+                .set(SmsCode::getUsedTime, currentTime)
+                .set(SmsCode::getUpdateTime, currentTime)
+                .set(SmsCode::getUsedIp, ip);
+        smsCodeMapper.update(updateWrapper);
+        // 更新缓存，清楚缓存中的code，防止重复使用
+        cacheService.delSmsCodeCache(phone);
     }
 
     /**
-     * 构建登录响应
+     * 查询用户信息
      */
-    private UserInfoResponse buildLoginResponse(UserInfo userInfo) {
-        // 更新登录时间
-        userInfo.setUpdateTime(System.currentTimeMillis());
-        userInfoMapper.updateById(userInfo);
-
-        UserInfoResponse response = new UserInfoResponse();
-        response.setId(userInfo.getId());
-        response.setUserId(userInfo.getUserId());
-        response.setUsername(userInfo.getUsername());
-        response.setNickname(userInfo.getNickname());
-        response.setAvatar(userInfo.getAvatar());
-        response.setGender(userInfo.getGender());
-        response.setPhone(userInfo.getPhone());
-        response.setEmail(userInfo.getEmail());
-        response.setStatus(userInfo.getStatus());
-        response.setToken(TokenGenerator.generateToken(userInfo.getId()));
-        return response;
+    private UserInfoDto buildUserInfoDto(String phone) {
+        UserInfoDto userInfoDto = userService.queryByPhone(phone);
+        // 用户存在，则直接组装返回
+        if (userInfoDto != null) {
+            if (userInfoDto.getStatus() == UserStatusEnum.DISABLED.getCode()) {
+                throw new BusinessException("该账号 [" + phone + "] 已被禁用");
+            }
+            if (userInfoDto.getDeleted() == UserDeleteEnum.DELETED.getCode()) {
+                throw new BusinessException("该账号 [" + phone + "] 已被注销");
+            }
+            return userInfoDto;
+        }
+        // 用户不存在，注册用户
+        return userService.registerByPhone(phone);
     }
+
 }
