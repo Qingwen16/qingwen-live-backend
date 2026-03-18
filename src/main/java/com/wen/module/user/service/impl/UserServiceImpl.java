@@ -35,6 +35,9 @@ public class UserServiceImpl implements UserService {
 
     private final UserInfoMapper userInfoMapper;
 
+    /**
+     * 手机号注册
+     */
     @Override
     public UserInfoDto registerByPassword(UserRegisterRequest request) {
         // 参数校验
@@ -94,6 +97,9 @@ public class UserServiceImpl implements UserService {
         return buildUserInfoDto(userInfo);
     }
 
+    /**
+     * 根据手机号查询用户信息
+     */
     @Override
     public UserInfoDto queryByPhone(String phone) {
         UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
@@ -102,6 +108,9 @@ public class UserServiceImpl implements UserService {
         return buildUserInfoDto(userInfo);
     }
 
+    /**
+     * 根据用户ID查询用户信息
+     */
     @Override
     public UserInfoDto queryByUserId(Long userId) {
         UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
@@ -110,6 +119,9 @@ public class UserServiceImpl implements UserService {
         return buildUserInfoDto(userInfo);
     }
 
+    /**
+     * 根据手机号和用户ID查询用户信息
+     */
     @Override
     public UserInfo queryByPhoneAndUserId(String phone, Long userId) {
         UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
@@ -119,6 +131,9 @@ public class UserServiceImpl implements UserService {
         return userInfo;
     }
 
+    /**
+     * 构建用户信息返回对象
+     */
     @Override
     public UserInfoResponse buildUserInfoResponse(UserInfoDto userInfoDto) {
         UserInfoResponse response = new UserInfoResponse();

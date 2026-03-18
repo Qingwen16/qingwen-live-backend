@@ -82,6 +82,9 @@ public class FollowServiceImpl implements FollowService {
         }
     }
 
+    /**
+     * 获取某用户对某用户的关注状态
+     */
     private UserFollow getUserFollow(Long userId, Long followId) {
         LambdaQueryWrapper<UserFollow> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserFollow::getUserId, userId);
