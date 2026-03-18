@@ -20,8 +20,12 @@ import org.springframework.stereotype.Service;
 public class CacheServiceImpl implements CacheService {
 
     private final CacheConfig cacheConfig;
+
     private final RedisTemplate<String, Object> redisTemplate;
 
+    /**
+     * 保存发送短信验证码的间隔时间
+     */
     @Override
     public void setSendSmsCodeInterval(String phone) {
         String timeKey = cacheConfig.getKeySendSmsCodeInterval(phone);
@@ -29,12 +33,18 @@ public class CacheServiceImpl implements CacheService {
                 cacheConfig.getDefaultTimeUnit());
     }
 
+    /**
+     * 获取发送短信验证码的间隔时间
+     */
     @Override
     public boolean getSendSmsCodeInterval(String phone) {
         String timeKey = cacheConfig.getKeySendSmsCodeInterval(phone);
         return Boolean.TRUE.equals(redisTemplate.hasKey(timeKey));
     }
 
+    /**
+     * 存储短信验证码缓存
+     */
     @Override
     public void setSmsCodeCache(String phone, String code) {
         String codeKey = cacheConfig.getKeyPhoneSmsCode(phone);
@@ -43,12 +53,18 @@ public class CacheServiceImpl implements CacheService {
         log.info("保存短信验证码缓存: phone={}, type={}", phone, code);
     }
 
+    /**
+     * 获取短信验证码缓存
+     */
     @Override
     public String getSmsCodeCache(String phone) {
         String codeKey = cacheConfig.getKeyPhoneSmsCode(phone);
         return (String) redisTemplate.opsForValue().get(codeKey);
     }
 
+    /**
+     * 删除短信验证码缓存
+     */
     @Override
     public void delSmsCodeCache(String phone) {
         String codeKey = cacheConfig.getKeyPhoneSmsCode(phone);

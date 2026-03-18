@@ -12,8 +12,6 @@ public interface LoginHandler {
 
     /**
      * 处理登录请求
-     * @param request 登录请求
-     * @return 用户信息和 Token
      */
     UserInfoResponse login(LoginRequest request);
 
