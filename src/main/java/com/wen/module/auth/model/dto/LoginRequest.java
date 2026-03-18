@@ -40,4 +40,9 @@ public class LoginRequest {
      */
     private String extraData;
 
+    /**
+     * 登陆地址IP
+     */
+    private String ip;
+
 }

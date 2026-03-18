@@ -1,6 +1,7 @@
 package com.wen.config;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,27 +12,38 @@ import java.util.concurrent.TimeUnit;
  * @Date: 2026/3/14 16:54
  */
 @Data
+@Slf4j
 @Configuration
 public class CacheConfig {
 
     @Value("${cache.keyNameSpace}")
     private String keyNameSpace;
 
-    /**
-     * 默认时间类型
-     */
+    @Value("${cache.defaultKeyVersion}")
+    private String defaultKeyVersion;
+
     private TimeUnit defaultTimeUnit = TimeUnit.SECONDS;
+
+    /**
+     * 项目 key 前缀
+     */
+    public String prefix() {
+        return keyNameSpace + ":" + defaultKeyVersion + ":";
+    }
 
     /**
      * 手机短信是否发送过的时间
      */
-    private String keySendSmsCode = keyNameSpace + ":keySendSmsCode:";
+    public String getKeySendSmsCodeInterval(String phone) {
+        return prefix() + "SendSmsCodeInterval:" + phone;
+    }
 
     /**
-     * 手机短信信息缓存
+     * 手机短信验证码的缓存
      */
-    private String keySmsCodeCreateDto = keyNameSpace + ":keySmsCodeCreateDto";
-
+    public String getKeyPhoneSmsCode(String phone) {
+        return prefix() + "PhoneSmsCode:" + phone;
+    }
 
 
 }

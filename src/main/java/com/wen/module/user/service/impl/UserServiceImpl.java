@@ -1,13 +1,16 @@
 package com.wen.module.user.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.wen.module.auth.common.AuthTypeEnum;
 import com.wen.common.exception.BusinessException;
-import com.wen.module.user.common.DeleteStatusEnum;
-import com.wen.module.user.common.UserIdGenerator;
+import com.wen.common.generator.SmsCodeGenerator;
+import com.wen.module.auth.common.AuthConstants;
+import com.wen.module.user.common.UserDeleteEnum;
+import com.wen.common.generator.UserIdGenerator;
 import com.wen.module.user.common.UserStatusEnum;
 import com.wen.module.user.mapper.UserInfoMapper;
+import com.wen.module.user.model.dto.UserInfoDto;
 import com.wen.module.user.model.dto.UserInfoResponse;
 import com.wen.module.user.model.dto.UserRegisterRequest;
 import com.wen.module.user.model.dto.UserUpdateRequest;
@@ -21,22 +24,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 用户服务实现类
- *
  * @Author : 青灯文案
  * @Date: 2026/3/14
+ * 用户服务实现类
  */
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private static final long USER_ID_START = 1_000_000_000L;
-
     private final UserInfoMapper userInfoMapper;
 
     @Override
-    public UserInfoResponse register(UserRegisterRequest request) {
+    public UserInfoDto registerByPassword(UserRegisterRequest request) {
         // 参数校验
         if (StrUtil.isBlank(request.getPhone())) {
             throw new BusinessException("用户手机号不能为空");
@@ -44,31 +44,26 @@ public class UserServiceImpl implements UserService {
         if (StrUtil.isBlank(request.getPassword())) {
             throw new BusinessException("密码不能为空");
         }
-
         // 允许用户名重复, 检查手机号是否已存在
-        if (StrUtil.isNotBlank(request.getPhone())) {
-            Long count = userInfoMapper.selectCount(new LambdaQueryWrapper<UserInfo>()
-                    .eq(UserInfo::getPhone, request.getPhone())
-                    .eq(UserInfo::getDeleted, DeleteStatusEnum.ACTIVE.getCode())
-            );
-
-            if (count > 0) {
-                throw new BusinessException("手机号已被注册");
-            }
+        UserInfoDto userInfoDto = queryByPhone(request.getPhone());
+        if (userInfoDto != null) {
+            log.info("手机号注册，该用户存在用户信息: {}", userInfoDto);
+            return userInfoDto;
         }
-
-        // 创建用户
-        UserInfo createUser = new UserInfo();
-        createUser.setUserId(UserIdGenerator.generator());
-        // todo 密码未加密
-        createUser.setPassword(request.getPassword());
-        createUser.setStatus(UserStatusEnum.NORMAL.getCode());
-        createUser.setDeleted(DeleteStatusEnum.ACTIVE.getCode());
-        createUser.setCreateTime(System.currentTimeMillis());
-        createUser.setUpdateTime(System.currentTimeMillis());
-        userInfoMapper.insert(createUser);
-        // 返回用户信息
-        return buildUserInfoResponse(createUser);
+        // 2. 新用户自动注册
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(UserIdGenerator.generator());
+        userInfo.setUsername("phone_" + request.getPhone());
+        userInfo.setNickname("手机用户_" + SmsCodeGenerator.generateCode());
+        userInfo.setPhone(request.getPhone());
+        userInfo.setPassword(request.getPassword());
+        userInfo.setStatus(UserStatusEnum.NORMAL.getCode());
+        userInfo.setDeleted(UserDeleteEnum.ACTIVE.getCode());
+        userInfo.setCreateTime(System.currentTimeMillis());
+        userInfo.setUpdateTime(System.currentTimeMillis());
+        userInfoMapper.insert(userInfo);
+        log.info("手机号用户注册成功：createUser={}", userInfo);
+        return buildUserInfoDto(userInfo);
     }
 
     /**
@@ -76,108 +71,97 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UserInfo registerByAuth(String phone, AuthTypeEnum authTypeEnum) {
-        // 1. 先查询是否存在（加锁或使用唯一索引）
-        List<UserInfo> userInfoList = userInfoMapper.selectList(
-                new LambdaQueryWrapper<UserInfo>()
-                        .eq(UserInfo::getPhone, phone)
-        );
-
-        if (!userInfoList.isEmpty()) {
-            UserInfo userInfo = userInfoList.get(0);
-            // 检查用户状态
-            if (userInfo.getStatus() == UserStatusEnum.DISABLED.getCode()) {
-                throw new BusinessException("账号已被禁用");
-            }
-            if (userInfo.getDeleted() == DeleteStatusEnum.DELETED.getCode()) {
-                throw new BusinessException("账号已被删除");
-            }
-            log.info("手机号用户登录，用户信息：{}", userInfo);
-            return userInfo;
+    public UserInfoDto registerByPhone(String phone) {
+        UserInfoDto userInfoDto = queryByPhone(phone);
+        // 1. 存在信息直接返回
+        if (userInfoDto != null) {
+            log.info("手机号注册，该用户存在用户信息: {}", userInfoDto);
+            return userInfoDto;
         }
-
         // 2. 新用户自动注册
         log.info("手机号用户注册：{}", phone);
-        UserInfo createUser = new UserInfo();
-        createUser.setUserId(UserIdGenerator.generator());
-        createUser.setUsername("phone_" + phone);
-        createUser.setNickname("手机用户_" + (phone.length() > 7 ? phone.substring(7) : phone));
-        createUser.setPhone(phone);
-        createUser.setStatus(UserStatusEnum.NORMAL.getCode());
-        createUser.setDeleted(DeleteStatusEnum.ACTIVE.getCode());
-        createUser.setCreateTime(System.currentTimeMillis());
-        createUser.setUpdateTime(System.currentTimeMillis());
-        userInfoMapper.insert(createUser);
-        log.info("手机号用户注册成功：createUser={}", createUser);
-        return createUser;
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(UserIdGenerator.generator());
+        userInfo.setUsername("phone_" + phone);
+        userInfo.setNickname("手机用户_" + SmsCodeGenerator.generateCode());
+        userInfo.setPhone(phone);
+        userInfo.setStatus(UserStatusEnum.NORMAL.getCode());
+        userInfo.setDeleted(UserDeleteEnum.ACTIVE.getCode());
+        userInfo.setCreateTime(System.currentTimeMillis());
+        userInfo.setUpdateTime(System.currentTimeMillis());
+        userInfoMapper.insert(userInfo);
+        log.info("手机号用户注册成功：createUser={}", userInfo);
+        return buildUserInfoDto(userInfo);
     }
 
     @Override
-    public UserInfoResponse queryByPhone(String phone) {
-        List<UserInfo> userInfoList = userInfoMapper.selectList(new LambdaQueryWrapper<UserInfo>()
+    public UserInfoDto queryByPhone(String phone) {
+        UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
                 .eq(UserInfo::getPhone, phone));
-        if (userInfoList.isEmpty()) {
-            throw new BusinessException("用户不存在");
-        }
-        UserInfo userInfo = userInfoList.get(0);
-        return buildUserInfoResponse(userInfo);
+        log.info("根据手机号 [{}] 查询用户成功 [{}]", phone, userInfo);
+        return buildUserInfoDto(userInfo);
     }
 
     @Override
-    public UserInfoResponse queryByUserId(Long userId) {
-        List<UserInfo> userInfoList = userInfoMapper.selectList(new LambdaQueryWrapper<UserInfo>()
+    public UserInfoDto queryByUserId(Long userId) {
+        UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
                 .eq(UserInfo::getUserId, userId));
-        if (userInfoList.isEmpty()) {
-            throw new BusinessException("用户不存在");
-        }
-        UserInfo userInfo = userInfoList.get(0);
-        return buildUserInfoResponse(userInfo);
+        log.info("根据用户ID [{}] 查询用户成功 [{}]", userId, userInfo);
+        return buildUserInfoDto(userInfo);
+    }
+
+    @Override
+    public UserInfo queryByPhoneAndUserId(String phone, Long userId) {
+        UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
+                .eq(UserInfo::getUserId, userId)
+                .eq(UserInfo::getPhone, phone));
+        log.info("根据用户ID [{}] 和手机号 [{}] 查询用户成功 [{}]", userId, phone, userInfo);
+        return userInfo;
+    }
+
+    @Override
+    public UserInfoResponse buildUserInfoResponse(UserInfoDto userInfoDto) {
+        UserInfoResponse response = new UserInfoResponse();
+        response.setUserInfoDto(userInfoDto);
+        response.setToken("");
+        return response;
     }
 
     /**
      * 更新用户信息
      */
     public String updateUserInfo(UserUpdateRequest request) {
-        Long userId = request.getUserId();
-        String phone = request.getPhone();
-
         // 1. 参数校验
-        if (userId == null) {
-            throw new BusinessException("用户 ID 不能为空");
-        }
-        if (!isValidPhone(phone)) {
-            throw new BusinessException("手机号格式不正确");
-        }
-
+        verifyUserInfoParam(request);
         // 2. 根据 userId 和 phone 查询用户
-        UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
-                .eq(UserInfo::getUserId, userId)
-                .eq(UserInfo::getPhone, phone)
-        );
-
+        UserInfo userInfo = queryByPhoneAndUserId(request.getPhone(), request.getUserId());
         if (userInfo == null) {
-            throw new BusinessException("用户不存在");
+            log.error("QueryByPhoneAndUserId: 数据库未查询到信息，新建数据");
+            userInfo = new UserInfo();
+            userInfo.setUserId(request.getUserId());
+            userInfo.setPhone(request.getPhone());
+            userInfo.setCreateTime(System.currentTimeMillis());
         }
-
         // 3. 更新用户信息（只更新非空字段）
         updateUserInfoFields(userInfo, request);
-
-        // 4. 保存到数据库
         userInfo.setUpdateTime(System.currentTimeMillis());
         userInfoMapper.updateById(userInfo);
-
         return "用户信息更新成功";
     }
 
-
     /**
-     * 验证手机号格式
+     * 参数校验
      */
-    private boolean isValidPhone(String phone) {
-        if (phone == null || phone.isEmpty()) {
-            return false;
+    private void verifyUserInfoParam(UserUpdateRequest request) {
+        if (request.getUserId() == null) {
+            throw new BusinessException("用户ID不能为空");
         }
-        return phone.matches("^1[3-9]\\d{9}$");
+        if (request.getPhone() == null || request.getPhone().isEmpty()) {
+            throw new BusinessException("用户手机号不能为空");
+        }
+        if (!request.getPhone().matches(AuthConstants.PHONE_REGEX)) {
+            throw new BusinessException("手机号格式不正确");
+        }
     }
 
     /**
@@ -219,14 +203,12 @@ public class UserServiceImpl implements UserService {
     /**
      * 构建用户信息响应
      */
-    private UserInfoResponse buildUserInfoResponse(UserInfo userInfo) {
-        UserInfoResponse response = new UserInfoResponse();
-        response.setId(userInfo.getId());
-        response.setUsername(userInfo.getUsername());
-        response.setNickname(userInfo.getNickname());
-        response.setPhone(userInfo.getPhone());
-        response.setEmail(userInfo.getEmail());
-        response.setStatus(userInfo.getStatus());
+    private UserInfoDto buildUserInfoDto(UserInfo userInfo) {
+        if (userInfo == null) {
+            return null;
+        }
+        UserInfoDto response = new UserInfoDto();
+        BeanUtil.copyProperties(userInfo, response);
         return response;
     }
 }

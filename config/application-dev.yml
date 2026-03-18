@@ -21,7 +21,7 @@ spring:
   # Redis 配置
   redis:
     # 单机模式
-    host: 127.0.0.1
+    host: 218.244.138.75
     port: 6379
     password: admin12345     # 如果没有密码就删除这行
     database: 0              # 数据库索引（0-15）
@@ -38,3 +38,10 @@ spring:
 
 cache:
   keyNameSpace: Qingwen
+  defaultKeyVersion: v1
+
+jwt:
+  secret: myVeryLongSecretKeyForJWT123456789012345678901234567890
+  expiration: 604800000  # 7天（毫秒）
+  header: Authorization
+  prefix: Bearer

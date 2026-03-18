@@ -1,10 +1,9 @@
 package com.wen.interceptor;
 
-import com.wen.module.user.mapper.UserInfoMapper;
-import com.wen.module.user.model.entity.UserInfo;
-import com.wen.common.utils.UserContext;
+import com.wen.common.generator.TokenGenerator;
+import com.wen.common.utils.UserInfoContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -16,72 +15,51 @@ import jakarta.servlet.http.HttpServletResponse;
  * 解析 Token，设置用户上下文（游客或登录用户）
  */
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
 
-    private RedisTemplate<String, Object> redisTemplate;
-
-    private UserInfoMapper userInfoMapper;
-
-    /**
-     * Token 前缀
-     */
-    private static final String TOKEN_PREFIX = "user:token:";
-
-    /**
-     * Token 过期时间（30 天）
-     */
-    private static final long TOKEN_EXPIRE_DAYS = 30;
+    private final TokenGenerator tokenGenerator;
 
     @Override
-    public boolean preHandle(HttpServletRequest request,
-                           HttpServletResponse response,
-                           Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        // 从请求头获取 Token
+        // 1. 从请求头获取 Token
         String token = request.getHeader("Authorization");
 
-        if (token != null && !token.isEmpty()) {
-            // 移除 Bearer 前缀
-            if (token.startsWith("Bearer ")) {
-                token = token.substring(7);
-            }
-
-            // 从 Redis 验证 Token
-            String userIdStr = (String) redisTemplate.opsForValue().get(TOKEN_PREFIX + token);
-
-            if (userIdStr != null) {
-                // Token 有效，查询用户信息并设置到上下文
-                try {
-                    Long userId = Long.parseLong(userIdStr);
-                    UserInfo userInfo = userInfoMapper.selectById(userId);
-
-                    if (userInfo != null && userInfo.getStatus() == 1 && userInfo.getDeleted() == 0) {
-                        // 用户状态正常，设置到上下文
-                        UserContext.setUserInfo(userInfo);
-
-                        // 刷新 Token 过期时间（滑动窗口）
-                        redisTemplate.expire(TOKEN_PREFIX + token, TOKEN_EXPIRE_DAYS, java.util.concurrent.TimeUnit.DAYS);
-                    }
-                    // else: 用户被禁用或已注销，按游客处理
-                } catch (NumberFormatException e) {
-                    // Token 数据异常，按游客处理
-                    UserContext.clear();
-                }
-            }
-            // else: Token 无效或过期，保持游客状态
+        if (token == null || !token.startsWith("Bearer ")) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"code\":401,\"msg\":\"未登录\"}");
+            return false;
         }
-        // else: 没有 Token，纯游客
 
-        return true; // 继续执行后续处理
+        // 2. 去掉 "Bearer " 前缀
+        token = token.substring(7);
+
+        // 3. 验证 Token
+        if (!tokenGenerator.validateToken(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"code\":401,\"msg\":\"Token无效\"}");
+            return false;
+        }
+
+        // 4. 检查是否过期
+        if (tokenGenerator.isTokenExpired(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"code\":401,\"msg\":\"Token已过期\"}");
+            return false;
+        }
+
+        // 5. 将用户信息存入请求属性
+        String userId = tokenGenerator.getUserIdFromToken(token);
+        request.setAttribute("userId", userId);
+
+        return true;
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request,
-                               HttpServletResponse response,
-                               Object handler,
-                               Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         // 请求完成后清理上下文，防止内存泄漏
-        UserContext.clear();
+        UserInfoContext.clear();
     }
 }

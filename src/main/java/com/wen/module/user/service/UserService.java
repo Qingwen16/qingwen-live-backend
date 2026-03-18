@@ -1,6 +1,7 @@
 package com.wen.module.user.service;
 
 import com.wen.module.auth.common.AuthTypeEnum;
+import com.wen.module.user.model.dto.UserInfoDto;
 import com.wen.module.user.model.dto.UserInfoResponse;
 import com.wen.module.user.model.dto.UserRegisterRequest;
 import com.wen.module.user.model.dto.UserUpdateRequest;
@@ -16,22 +17,32 @@ public interface UserService {
     /**
      * 用户注册（根据信息注册）
      */
-    UserInfoResponse register(UserRegisterRequest request);
+    UserInfoDto registerByPassword(UserRegisterRequest request);
 
     /**
      * 用户注册（手机等第三方注册）
      */
-    UserInfo registerByAuth(String phone, AuthTypeEnum authTypeEnum);
+    UserInfoDto registerByPhone(String phone);
 
     /**
      * 根据 手机号 获取用户信息
      */
-    UserInfoResponse queryByPhone(String phone);
+    UserInfoDto queryByPhone(String phone);
 
     /**
      * 根据 用户ID 获取用户信息
      */
-    UserInfoResponse queryByUserId(Long userId);
+    UserInfoDto queryByUserId(Long userId);
+
+    /**
+     * 根据 用户ID 获取用户信息
+     */
+    UserInfo queryByPhoneAndUserId(String phone, Long userId);
+
+    /**
+     * 将 UserInfoDto 转为 UserInfoResponse
+     */
+    UserInfoResponse buildUserInfoResponse(UserInfoDto userInfoDto);
 
     /**
      * 更新用户信息

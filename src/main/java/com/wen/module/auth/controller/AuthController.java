@@ -1,7 +1,7 @@
 package com.wen.module.auth.controller;
 
 import com.wen.common.response.Response;
-import com.wen.common.utils.UserContext;
+import com.wen.common.utils.UserInfoContext;
 import com.wen.module.auth.common.AuthTypeEnum;
 import com.wen.module.auth.common.LoginFactory;
 import com.wen.module.auth.model.dto.LoginRequest;
@@ -69,7 +69,7 @@ public class AuthController {
     @PostMapping("/logout")
     public Response<UserInfoResponse> logout() {
         // 删除用户，过期token
-        UserContext.clear();
+        UserInfoContext.clear();
         return Response.success();
     }
 
