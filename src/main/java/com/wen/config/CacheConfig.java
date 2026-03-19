@@ -45,5 +45,18 @@ public class CacheConfig {
         return prefix() + "PhoneSmsCode:" + phone;
     }
 
+    /**
+     * 获取用户手机验证码缓存Key
+     */
+    public String getKeyRefreshToken(Long userId) {
+        return prefix() + "RefreshToken:" + userId;
+    }
+
+    /**
+     * 设置AccessToken的黑名单
+     */
+    public String getKeyAccessTokenBlackList(String accessTokenJti) {
+        return prefix() + "AccessTokenBlackList:" + accessTokenJti;
+    }
 
 }

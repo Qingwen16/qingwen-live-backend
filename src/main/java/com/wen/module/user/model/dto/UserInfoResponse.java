@@ -1,5 +1,6 @@
 package com.wen.module.user.model.dto;
 
+import com.wen.module.auth.model.dto.TokenDto;
 import lombok.Data;
 
 /**
@@ -11,7 +12,7 @@ public class UserInfoResponse {
     /**
      * Token
      */
-    private String token;
+    private TokenDto tokenDto;
 
     /**
      * 用户 ID

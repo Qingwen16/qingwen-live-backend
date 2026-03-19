@@ -3,11 +3,12 @@ package com.wen.module.auth.service.handler;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.wen.common.exception.BusinessException;
-import com.wen.common.generator.TokenGenerator;
+import com.wen.common.generator.JwtTokenGenerator;
 import com.wen.common.utils.UserInfoContext;
 import com.wen.module.auth.common.*;
 import com.wen.module.auth.mapper.SmsCodeMapper;
 import com.wen.module.auth.model.dto.LoginRequest;
+import com.wen.module.auth.model.dto.TokenDto;
 import com.wen.module.auth.model.entity.SmsCode;
 import com.wen.module.auth.service.CacheService;
 import com.wen.module.auth.service.LoginHandler;
@@ -21,16 +22,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 /**
  * 手机验证码登录处理器
  * 当前唯一实现的登录方式
+ *
+ * @author jwruan
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class SmsCodeLoginHandler implements LoginHandler {
 
-    private final TokenGenerator tokenGenerator;
+    private final JwtTokenGenerator jwtTokenGenerator;
 
     private final CacheService cacheService;
 
@@ -52,14 +57,18 @@ public class SmsCodeLoginHandler implements LoginHandler {
         // 2. 验证验证码
         verifyCode(phone, code, ip);
         // 3. 查询用户
-        UserInfoDto userInfoDto = buildUserInfoDto(phone);
+        UserInfoDto user = buildUserInfoDto(phone);
         // 4. 登录成功，将用户信息存入本地
-        UserInfoContext.setUserInfo(userInfoDto);
-        // 2. 生成 Token
-        String token = tokenGenerator.generateToken(userInfoDto.getUserId(), userInfoDto.getPhone());
+        UserInfoContext.setUserInfo(user);
+        // 5. 生成 Token
+        TokenDto tokenDto = jwtTokenGenerator.generateTokens(user.getUserId());
+        // 6. 缓存 Token
+        cacheService.setUserRefreshToken(user.getUserId(), tokenDto.getRefreshToken(),
+                jwtTokenGenerator.getRefreshTokenTimeout());
         // 5. 构建响应
         UserInfoResponse response = new UserInfoResponse();
-        response.setUserInfoDto(userInfoDto);
+        response.setUserInfoDto(user);
+        response.setTokenDto(tokenDto);
         return response;
     }
 

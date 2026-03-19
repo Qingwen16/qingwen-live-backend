@@ -1,7 +1,9 @@
 package com.wen.interceptor;
 
-import com.wen.common.generator.TokenGenerator;
+import com.wen.common.generator.JwtTokenGenerator;
 import com.wen.common.utils.UserInfoContext;
+import com.wen.module.auth.service.CacheService;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -19,44 +21,63 @@ import jakarta.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
 
-    private final TokenGenerator tokenGenerator;
+    private final JwtTokenGenerator jwtTokenGenerator;
+
+    private final CacheService cacheService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         // 1. 从请求头获取 Token
-        String token = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
-        if (token == null || !token.startsWith("Bearer ")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"code\":401,\"msg\":\"未登录\"}");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header");
             return false;
         }
 
-        // 2. 去掉 "Bearer " 前缀
-        token = token.substring(7);
-
-        // 3. 验证 Token
-        if (!tokenGenerator.validateToken(token)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"code\":401,\"msg\":\"Token无效\"}");
+        String accessToken = authHeader.substring(7);
+        Claims claims;
+        try {
+            claims = jwtTokenGenerator.parseToken(accessToken);
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token");
             return false;
         }
 
-        // 4. 检查是否过期
-        if (tokenGenerator.isTokenExpired(token)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"code\":401,\"msg\":\"Token已过期\"}");
+        // 2. 检查 Token 是否过期
+        if (jwtTokenGenerator.isTokenExpired(claims)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
             return false;
         }
 
-        // 5. 将用户信息存入请求属性
-        String userId = tokenGenerator.getUserIdFromToken(token);
-        request.setAttribute("userId", userId);
+        String jti = claims.getId();
+        Long userId = claims.get("userId", Long.class);
+        String phone = claims.get("phone", String.class);
+
+        // 3. 检查 Token 是否已被加入黑名单（主动失效）
+        if (cacheService.hasAccessTokenBlackList(jti)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token has been invalidated");
+            return false;
+        }
+
+        // 4. 检查单点登录：这里我们通过校验 Refresh Token 是否存在来间接实现
+        // 如果用户在别处登录，Redis 中的 Refresh Token 会被覆盖，导致旧的 Refresh Token 失效
+        String storedRefreshToken = cacheService.getUserRefreshToken(userId);
+        if (storedRefreshToken == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Session expired, please login again");
+            return false;
+        }
+
+        // 5. 所有检查通过，将用户信息存入 ThreadLocal，供后续业务使用
+        // 例如: UserContextHolder.setUser(new AuthenticatedUser(userId, claims.get("role", String.class)));
 
         return true;
     }
 
+    /**
+     * 别忘了在 afterCompletion 中清理 ThreadLocal
+     */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         // 请求完成后清理上下文，防止内存泄漏
