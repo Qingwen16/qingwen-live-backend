@@ -31,4 +31,30 @@ public interface CacheService {
      */
     void delSmsCodeCache(String phone);
 
+    /**
+     * 设置用户token
+     */
+    void setUserRefreshToken(Long userId, String refreshToken, Long timeout);
+
+    /**
+     * 获取用户token
+     */
+    String getUserRefreshToken(Long userId);
+
+    /**
+     * 删除用户token
+     */
+    void delUserRefreshToken(Long userId);
+
+    /**
+     * 将某一用户的AccessToken加入黑名单，用于即使下线登出
+     */
+    void setAccessTokenBlackList(String jti, Long timeout);
+
+    /**
+     * 将某一用户的AccessToken加入黑名单，用于即使下线登出
+     */
+    Boolean hasAccessTokenBlackList(String jti);
+
+
 }

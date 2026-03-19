@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * 缓存服务实现类
  *
@@ -69,6 +71,48 @@ public class CacheServiceImpl implements CacheService {
     public void delSmsCodeCache(String phone) {
         String codeKey = cacheConfig.getKeyPhoneSmsCode(phone);
         redisTemplate.delete(codeKey);
+    }
+
+    /**
+     * 存储用户刷新缓存
+     */
+    @Override
+    public void setUserRefreshToken(Long userId, String refreshToken, Long timeout) {
+        String tokenKey = cacheConfig.getKeyRefreshToken(userId);
+        redisTemplate.opsForValue().set(tokenKey, refreshToken, timeout, cacheConfig.getDefaultTimeUnit());
+    }
+
+    /**
+     * 获取用户刷新缓存
+     */
+    @Override
+    public String getUserRefreshToken(Long userId) {
+        String tokenKey = cacheConfig.getKeyRefreshToken(userId);
+        return (String) redisTemplate.opsForValue().get(tokenKey);
+    }
+
+    /**
+     * 删除用户刷新缓存
+     */
+    @Override
+    public void delUserRefreshToken(Long userId) {
+        String tokenKey = cacheConfig.getKeyRefreshToken(userId);
+        redisTemplate.delete(tokenKey);
+    }
+
+    /**
+     * 设置用户的权限token的黑名单
+     */
+    @Override
+    public void setAccessTokenBlackList(String jti, Long timeout) {
+        String tokenKey = cacheConfig.getKeyAccessTokenBlackList(jti);
+        redisTemplate.opsForValue().set(tokenKey, "1", timeout, cacheConfig.getDefaultTimeUnit());
+    }
+
+    @Override
+    public Boolean hasAccessTokenBlackList(String jti) {
+        String tokenKey = cacheConfig.getKeyAccessTokenBlackList(jti);
+        return Boolean.TRUE.equals(redisTemplate.hasKey(tokenKey));
     }
 
 }

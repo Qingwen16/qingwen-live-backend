@@ -42,6 +42,5 @@ cache:
 
 jwt:
   secret: myVeryLongSecretKeyForJWT123456789012345678901234567890
-  expiration: 604800000  # 7天（毫秒）
-  header: Authorization
-  prefix: Bearer
+  access-token-timeout: 7200 # 2小时（秒）
+  refresh-token-timeout: 604800  # 7天（秒）
