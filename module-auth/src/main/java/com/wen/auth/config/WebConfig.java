@@ -1,9 +1,8 @@
-package com.wen.common.config;
+package com.wen.auth.config;
 
-import com.wen.interceptor.AuthInterceptor;
+import com.wen.auth.interceptor.AuthInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 

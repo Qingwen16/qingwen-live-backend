@@ -9,11 +9,12 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>live-common</module>
-        <module>live-start</module>
-        <module>live-auth</module>
-        <module>live-room</module>
-        <module>live-user</module>
+        <module>common-code</module>
+        <module>service-boot</module>
+        <module>module-auth</module>
+        <module>module-room</module>
+        <module>module-user</module>
+        <module>module-chat</module>
     </modules>
 
     <parent>
