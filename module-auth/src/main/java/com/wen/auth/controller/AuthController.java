@@ -1,14 +1,12 @@
 package com.wen.auth.controller;
 
+import com.wen.auth.common.LoginFactory;
+import com.wen.auth.service.AuthService;
 import com.wen.common.exception.BusinessException;
 import com.wen.common.response.Response;
-import com.wen.module.auth.common.AuthTypeEnum;
-import com.wen.module.auth.common.LoginFactory;
-import com.wen.module.auth.model.dto.LoginRequest;
-import com.wen.module.auth.model.dto.SmsCodeRequest;
-import com.wen.module.auth.model.dto.TokenDto;
-import com.wen.module.auth.service.AuthService;
-import com.wen.module.user.model.dto.UserInfoResponse;
+import com.wen.common.vo.auth.LoginRequest;
+import com.wen.common.vo.auth.SmsCodeRequest;
+import com.wen.common.vo.user.UserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +29,7 @@ public class AuthController {
     /**
      * 注册接口
      */
-    @PostMapping("/register")
+    @PostMapping("/registerByPhone")
     public Response<UserInfoResponse> register(@RequestBody LoginRequest request) {
         if (request == null) {
             throw new BusinessException("输入参数不能为空");
