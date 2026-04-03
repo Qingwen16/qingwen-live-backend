@@ -9,7 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>live-common</artifactId>
+    <artifactId>service-boot</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
