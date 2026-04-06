@@ -15,6 +15,8 @@
         <module>module-room</module>
         <module>module-user</module>
         <module>module-chat</module>
+        <module>module-order</module>
+        <module>module-anchor</module>
     </modules>
 
     <parent>
@@ -26,123 +28,106 @@
 
     <properties>
         <jjwt.version>0.12.7</jjwt.version>
+        <hutool.version>5.8.1</hutool.version>
+        <fastjson.version>1.2.83</fastjson.version>
+        <mybatis-plus.version>3.5.9</mybatis-plus.version>
+        <jna.version>5.13.0</jna.version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
+    <!-- 依赖管理：统一管理版本，不实际引入依赖 -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- JWT Token 认证 -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
+            <!-- Hutool 工具类 -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-jsqlparser</artifactId>
-            <version>3.5.9</version>
-        </dependency>
+            <!-- FastJSON -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
-            <version>3.5.9</version>
-        </dependency>
+            <!-- MyBatis-Plus -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-        </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-jsqlparser</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>5.8.1</version>
-        </dependency>
+            <!-- JNA -->
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna</artifactId>
+                <version>${jna.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.83</version>
-        </dependency>
+            <!-- 模块依赖版本管理 -->
+            <dependency>
+                <groupId>com.wen</groupId>
+                <artifactId>common-code</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
+            <dependency>
+                <groupId>com.wen</groupId>
+                <artifactId>module-auth</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
+            <dependency>
+                <groupId>com.wen</groupId>
+                <artifactId>module-user</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-        <!-- Lettuce 连接池 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-        </dependency>
+            <dependency>
+                <groupId>com.wen</groupId>
+                <artifactId>module-room</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-        <!-- Jackson 序列化 -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
+            <dependency>
+                <groupId>com.wen</groupId>
+                <artifactId>module-chat</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-
-        <!-- JWT Token 认证 -->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>${jjwt.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>${jjwt.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>${jjwt.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-            <version>5.13.0</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -150,33 +135,10 @@
                     <skip>false</skip>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                    <encoding>utf8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <!--生成的jar 不要包含pom.xml  pom.properties 这2个文件-->
-                        <addMavenDescriptor>false</addMavenDescriptor>
-                        <manifest>
-                            <!--是否要不第三番jar放到manifest的classpath中-->
-                            <addClasspath>true</addClasspath>
-                            <!--生成的manifest中的classpath的前缀，因为要把第三方jar放到lib目录下，所以classpath前缀是lib/-->
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <!--应用的main class -->
-                            <mainClass>cn.com.wind.server.Application</mainClass>
-                        </manifest>
-                    </archive>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
         </plugins>
-
 
         <resources>
             <resource>
@@ -187,7 +149,7 @@
             </resource>
             <!--设置自己目录下的配置文件-->
             <resource>
-                <!--下方resources的文件夹名字要和自己项目的文件夹名确认一致才行 很多人就是忽略了名字不一致 -->
+                <!--下方 resources 的文件夹名字要和自己项目的文件夹名确认一致才行 很多人就是忽略了名字不一致 -->
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*</include>

@@ -1,16 +1,15 @@
 package com.wen.auth.common;
 
+import com.wen.auth.service.LoginService;
+import com.wen.common.enums.auth.LoginTypeEnum;
 import com.wen.common.exception.BusinessException;
-import com.wen.module.auth.model.dto.LoginRequest;
-import com.wen.module.user.model.dto.UserInfoResponse;
-import com.wen.module.auth.service.LoginHandler;
+import com.wen.common.vo.auth.LoginRequest;
+import com.wen.common.vo.user.UserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,12 +22,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LoginFactory {
 
-    private final List<LoginHandler> loginHandlers;
+    private final List<LoginService> loginHandlers;
 
     /**
      * 缓存处理器映射关系
      */
-    private Map<AuthTypeEnum, LoginHandler> handlerMap;
+    private Map<LoginTypeEnum, LoginService> handlerMap;
 
     /**
      * 初始化处理器映射
@@ -37,7 +36,7 @@ public class LoginFactory {
         if (handlerMap == null) {
             handlerMap = loginHandlers.stream()
                     .collect(Collectors.toMap(
-                            LoginHandler::getSupportedType,
+                            LoginService::getSupportedType,
                             Function.identity()
                     ));
         }
@@ -51,24 +50,24 @@ public class LoginFactory {
     public UserInfoResponse executeLogin(LoginRequest request) {
         initHandlerMap();
 
-        AuthTypeEnum authTypeEnum = request.getAuthTypeEnum();
-        if (authTypeEnum == null) {
+        LoginTypeEnum loginTypeEnum = request.getLoginTypeEnum();
+        if (loginTypeEnum == null) {
             throw new BusinessException("登录类型不能为空");
         }
 
-        LoginHandler handler = handlerMap.get(authTypeEnum);
-        if (handler == null) {
-            throw new BusinessException("暂不支持该登录方式：" + authTypeEnum);
+        LoginService service = handlerMap.get(loginTypeEnum);
+        if (service == null) {
+            throw new BusinessException("暂不支持该登录方式：" + loginTypeEnum);
         }
 
-        log.info("执行登录，类型：{}", authTypeEnum);
-        return handler.login(request);
+        log.info("执行登录，类型：{}", loginTypeEnum);
+        return service.login(request);
     }
 
     /**
      * 获取所有支持的登录方式
      */
-    public List<AuthTypeEnum> getSupportedTypes() {
+    public List<LoginTypeEnum> getSupportedTypes() {
         initHandlerMap();
         return new ArrayList<>(handlerMap.keySet());
     }

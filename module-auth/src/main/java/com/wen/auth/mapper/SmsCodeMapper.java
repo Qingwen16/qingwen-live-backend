@@ -1,7 +1,7 @@
 package com.wen.auth.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wen.module.auth.model.entity.SmsCode;
+import com.wen.auth.entity.SmsCode;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
