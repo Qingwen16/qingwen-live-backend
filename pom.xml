@@ -15,6 +15,8 @@
         <module>module-room</module>
         <module>module-user</module>
         <module>module-chat</module>
+        <module>module-order</module>
+        <module>module-anchor</module>
     </modules>
 
     <parent>
