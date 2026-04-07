@@ -9,7 +9,8 @@
     <file url="file://$PROJECT_DIR$/module-order/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/module-room/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/module-user/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/service-boot/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-start/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-start/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>

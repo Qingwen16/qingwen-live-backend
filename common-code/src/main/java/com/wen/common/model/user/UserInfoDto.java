@@ -1,24 +1,13 @@
-package com.wen.user.entity;
+package com.wen.common.model.user;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 /**
- * 用户信息实体类
- * 只存储用户基本信息，不包含任何登录认证信息
+ * @author : rjw
+ * @date : 2026-03-18
  */
-@TableName("user_info")
 @Data
-public class UserInfo {
-    /**
-     * 主键 ID（数据库自增）
-     */
-    @TableId(type = IdType.AUTO)
-    private Long id;
+public class UserInfoDto {
 
     /**
      * 用户唯一标识（10 位数字，类似 QQ 号）
@@ -80,13 +69,4 @@ public class UserInfo {
      */
     private Integer deleted;
 
-    /**
-     * 创建时间
-     */
-    private Long createTime;
-
-    /**
-     * 修改时间
-     */
-    private Long updateTime;
 }

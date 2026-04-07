@@ -1,16 +1,16 @@
 package com.wen.auth.controller;
 
-import com.wen.auth.common.LoginFactory;
+import com.wen.auth.common.PhoneLoginRequest;
+import com.wen.auth.common.WechatLoginRequest;
 import com.wen.auth.service.AuthService;
-import com.wen.common.exception.BusinessException;
-import com.wen.common.response.Response;
-import com.wen.common.vo.auth.LoginRequest;
-import com.wen.common.vo.auth.SmsCodeRequest;
-import com.wen.common.vo.user.UserInfoResponse;
+import com.wen.auth.service.PhoneService;
+import com.wen.auth.service.WechatService;
+import com.wen.common.model.auth.TokenDto;
+import com.wen.common.model.response.Response;
+import com.wen.auth.common.SmsCodeRequest;
+import com.wen.common.model.user.UserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 认证控制器
@@ -21,77 +21,47 @@ import java.util.List;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-
-    private final LoginFactory loginFactory;
-
+    
     private final AuthService authService;
 
-    /**
-     * 注册接口
-     */
-    @PostMapping("/registerByPhone")
-    public Response<UserInfoResponse> register(@RequestBody LoginRequest request) {
-        if (request == null) {
-            throw new BusinessException("输入参数不能为空");
-        }
-        UserInfoResponse response = loginFactory.executeLogin(request);
-        return Response.success(response);
-    }
-
-    /**
-     * 统一登录接口
-     * 支持多种登录方式，通过 loginType 区分
-     */
-    @PostMapping("/login")
-    public Response<UserInfoResponse> login(@RequestBody LoginRequest request) {
-        UserInfoResponse response = loginFactory.executeLogin(request);
-        return Response.success(response);
-    }
+    private final WechatService weChatService;
+    
+    private final PhoneService phoneService;
 
     /**
      * 发送短信验证码
      */
     @PostMapping("/sms/send")
     public Response<Void> sendSmsCode(@RequestBody SmsCodeRequest request) {
-        if (request == null) {
-            throw new BusinessException("输入参数不能为空");
-        }
-        authService.sendSmsCode(request);
+        phoneService.sendSmsCode(request);
         return Response.success(null, "验证码已发送");
     }
 
     /**
-     * 获取支持的登录方式列表
+     * 手机号验证码登录
      */
-    @GetMapping("/login/types")
-    public Response<Object> getLoginTypes() {
-        List<AuthTypeEnum> result = loginFactory.getSupportedTypes();
-        return Response.success(result);
+    @PostMapping("/phone/login")
+    public Response<UserInfoResponse> phoneLogin(@RequestBody PhoneLoginRequest request) {
+        UserInfoResponse response = phoneService.loginByPhone(request);
+        return Response.success(response);
     }
 
     /**
-     * 刷新令牌
+     * 微信一键获取手机号登录
      */
-    @PostMapping("/refreshUserToken")
-    public Response<TokenDto> refreshUserToken(@RequestBody TokenDto request) {
-        if (request == null) {
-            throw new BusinessException("输入参数不能为空");
-        }
-        TokenDto tokenDto = authService.refreshUserToken(request);
-        return Response.success(tokenDto);
+    @PostMapping("/wechat/login")
+    public Response<UserInfoResponse> weChatLogin(@RequestBody WechatLoginRequest request) {
+        UserInfoResponse response = weChatService.loginByWeChat(request);
+        return Response.success(response);
     }
-
+        
     /**
-     * 统一登录接口
+     * 登出
      */
-    @PostMapping("/logout")
-    public Response<?> logout(@RequestBody TokenDto request) {
-        if (request == null) {
-            throw new BusinessException("输入参数不能为空");
-        }
+    @GetMapping("/logout")
+    public Response<Void> logout(TokenDto request) {
         authService.logout(request);
-        return Response.success();
+        return Response.success(null, "登出成功");
     }
-
 
 }

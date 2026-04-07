@@ -10,13 +10,12 @@
     <packaging>pom</packaging>
     <modules>
         <module>common-code</module>
-        <module>service-boot</module>
+        <module>service-start</module>
         <module>module-auth</module>
         <module>module-room</module>
         <module>module-user</module>
         <module>module-chat</module>
         <module>module-order</module>
-        <module>module-anchor</module>
     </modules>
 
     <parent>

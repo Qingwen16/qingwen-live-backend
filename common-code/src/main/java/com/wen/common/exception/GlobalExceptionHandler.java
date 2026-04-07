@@ -1,6 +1,6 @@
 package com.wen.common.exception;
 
-import com.wen.common.response.Response;
+import com.wen.common.model.response.Response;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

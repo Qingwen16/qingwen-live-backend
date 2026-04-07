@@ -1,7 +1,7 @@
 package com.wen.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wen.module.user.model.entity.UserRole;
+import com.wen.user.entity.UserRole;
 
 /**
  * @Author : 青灯文案
