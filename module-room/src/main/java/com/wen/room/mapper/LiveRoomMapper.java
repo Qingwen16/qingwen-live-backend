@@ -1,7 +1,7 @@
 package com.wen.room.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wen.module.live.model.entity.LiveRoom;
+import com.wen.room.entity.LiveRoom;
 
 /**
  * @Author : 青灯文案

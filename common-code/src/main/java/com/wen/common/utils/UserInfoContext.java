@@ -1,6 +1,7 @@
 package com.wen.common.utils;
 
-import com.wen.module.user.model.dto.UserInfoDto;
+
+import com.wen.common.model.user.UserInfoDto;
 
 /**
  * 用户上下文工具类

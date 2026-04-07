@@ -35,12 +35,7 @@ public enum UserRoleTypeEnum {
     /**
      * 普通管理员 (平台级管理员，具有内容审核、用户管理等权限)
      */
-    ADMIN(4, "普通管理员"),
-
-    /**
-     * 超级管理员 (最高权限管理员，具有所有功能权限和系统配置权限)
-     */
-    SUPER_ADMIN(5, "超级管理员");
+    ADMIN(4, "管理员");
 
     private final int code;
 
@@ -62,14 +57,14 @@ public enum UserRoleTypeEnum {
      * 判断是否为管理员角色
      */
     public boolean isAdmin() {
-        return this == ROOM_ADMIN || this == ADMIN || this == SUPER_ADMIN;
+        return this == ADMIN;
     }
 
     /**
-     * 判断是否为超级管理员
+     * 判断是否为管理员角色
      */
-    public boolean isSuperAdmin() {
-        return this == SUPER_ADMIN;
+    public boolean isRoomAdmin() {
+        return this == ROOM_ADMIN;
     }
 
     /**

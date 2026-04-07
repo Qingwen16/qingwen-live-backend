@@ -1,6 +1,6 @@
 package com.wen.room.service;
 
-import com.wen.module.live.service.impl.LiveRoomService;
+import com.wen.room.service.impl.LiveRoomService;
 
 /**
  * @Author : 青灯文案

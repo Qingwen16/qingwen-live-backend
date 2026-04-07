@@ -1,14 +1,12 @@
 package com.wen.auth.service.impl;
 
-import com.wen.config.CacheConfig;
-import com.wen.module.auth.common.AuthConstants;
 import com.wen.auth.service.CacheService;
+import com.wen.common.config.CacheConfig;
+import com.wen.common.constant.AuthConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * 缓存服务实现类
@@ -74,45 +72,30 @@ public class CacheServiceImpl implements CacheService {
     }
 
     /**
-     * 存储用户刷新缓存
+     * 存储用户 Token
      */
     @Override
-    public void setUserRefreshToken(Long userId, String refreshToken, Long timeout) {
+    public void setUserToken(Long userId, String token, Long timeout) {
         String tokenKey = cacheConfig.getKeyRefreshToken(userId);
-        redisTemplate.opsForValue().set(tokenKey, refreshToken, timeout, cacheConfig.getDefaultTimeUnit());
+        redisTemplate.opsForValue().set(tokenKey, token, timeout, cacheConfig.getDefaultTimeUnit());
     }
 
     /**
-     * 获取用户刷新缓存
+     * 获取用户 Token
      */
     @Override
-    public String getUserRefreshToken(Long userId) {
+    public String getUserToken(Long userId) {
         String tokenKey = cacheConfig.getKeyRefreshToken(userId);
         return (String) redisTemplate.opsForValue().get(tokenKey);
     }
 
     /**
-     * 删除用户刷新缓存
+     * 删除用户 Token
      */
     @Override
-    public void delUserRefreshToken(Long userId) {
+    public void delUserToken(Long userId) {
         String tokenKey = cacheConfig.getKeyRefreshToken(userId);
         redisTemplate.delete(tokenKey);
-    }
-
-    /**
-     * 设置用户的权限token的黑名单
-     */
-    @Override
-    public void setAccessTokenBlackList(String jti, Long timeout) {
-        String tokenKey = cacheConfig.getKeyAccessTokenBlackList(jti);
-        redisTemplate.opsForValue().set(tokenKey, "1", timeout, cacheConfig.getDefaultTimeUnit());
-    }
-
-    @Override
-    public Boolean hasAccessTokenBlackList(String jti) {
-        String tokenKey = cacheConfig.getKeyAccessTokenBlackList(jti);
-        return Boolean.TRUE.equals(redisTemplate.hasKey(tokenKey));
     }
 
 }

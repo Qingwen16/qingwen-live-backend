@@ -1,6 +1,7 @@
 package com.wen.common.generator;
 
-import com.wen.module.auth.common.AuthConstants;
+
+import com.wen.common.constant.AuthConstants;
 
 /**
  * @author : rjw

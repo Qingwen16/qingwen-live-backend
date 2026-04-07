@@ -1,7 +1,7 @@
 package com.wen.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wen.module.user.model.entity.UserInfo;
+import com.wen.user.entity.UserInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
