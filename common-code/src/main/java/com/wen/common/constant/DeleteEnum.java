@@ -1,4 +1,4 @@
-package com.wen.user.common;
+package com.wen.common.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum UserDeleteEnum {
+public enum DeleteEnum {
 
     /**
      * 用户信息的状态

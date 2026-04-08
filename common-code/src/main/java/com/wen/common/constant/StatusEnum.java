@@ -1,4 +1,4 @@
-package com.wen.user.common;
+package com.wen.common.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum UserStatusEnum {
+public enum StatusEnum {
 
     /**
      * 禁用（封号、违规等），正常（可正常使用所有功能）

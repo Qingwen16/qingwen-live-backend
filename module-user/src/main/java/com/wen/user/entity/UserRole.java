@@ -30,7 +30,7 @@ public class UserRole implements Serializable {
     /**
      * 用户名字
      */
-    private Long userName;
+    private String userName;
 
     /**
      * 用户手机

@@ -16,8 +16,8 @@ import com.wen.common.utils.UserInfoContext;
 import com.wen.auth.service.CacheService;
 import com.wen.auth.common.SmsCodeRequest;
 import com.wen.common.model.user.UserInfoResponse;
-import com.wen.user.common.UserDeleteEnum;
-import com.wen.user.common.UserStatusEnum;
+import com.wen.common.constant.DeleteEnum;
+import com.wen.common.constant.StatusEnum;
 import com.wen.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -177,10 +177,10 @@ public class PhoneServiceImpl implements PhoneService {
         UserInfoDto userInfoDto = userService.queryByPhone(phone);
         // 用户存在，则直接组装返回
         if (userInfoDto != null) {
-            if (userInfoDto.getStatus() == UserStatusEnum.DISABLED.getCode()) {
+            if (userInfoDto.getStatus() == StatusEnum.DISABLED.getCode()) {
                 throw new BusinessException("该账号 [" + phone + "] 已被禁用");
             }
-            if (userInfoDto.getDeleted() == UserDeleteEnum.DELETED.getCode()) {
+            if (userInfoDto.getDeleted() == DeleteEnum.DELETED.getCode()) {
                 throw new BusinessException("该账号 [" + phone + "] 已被注销");
             }
             return userInfoDto;
