@@ -82,7 +82,7 @@ public class WechatServiceImpl implements WechatService {
         // 9. 构建响应
         com.wen.module.user.domain.vo.UserTokenVo response = new com.wen.module.user.domain.vo.UserTokenVo();
         response.setUserInfoVo(user);
-        response.setTokenDto(tokenInfo);
+        response.setTokenInfo(tokenInfo);
         
         log.info("微信登录成功: userId={}, phone={}", user.getUserId(), phone);
         return response;

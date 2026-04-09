@@ -1,8 +1,8 @@
 package com.wen.module.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.wen.common.enums.DeleteEnum;
-import com.wen.common.enums.StatusEnum;
+import com.wen.common.enums.UserDeleteEnum;
+import com.wen.common.enums.UserStatusEnum;
 import com.wen.common.exception.BusinessException;
 import com.wen.module.user.domain.entity.AnchorInfo;
 import com.wen.module.user.domain.entity.UserInfo;
@@ -40,10 +40,10 @@ public class AnchorServiceImpl implements AnchorService {
             throw new BusinessException("注册手机号不能为空");
         }
         UserInfoVo userInfo = userService.registerUser(request.getPhone());
-        if (userInfo.getStatus() == StatusEnum.DISABLED.getCode()) {
+        if (userInfo.getStatus() == UserStatusEnum.DISABLED.getCode()) {
             return "该用户状态已被设置为禁用";
         }
-        if (userInfo.getDeleted() == DeleteEnum.DELETED.getCode()) {
+        if (userInfo.getDeleted() == UserDeleteEnum.DELETED.getCode()) {
             return "该用户账号已被设置为删除";
         }
 

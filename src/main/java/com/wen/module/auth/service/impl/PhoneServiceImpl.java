@@ -2,8 +2,8 @@ package com.wen.module.auth.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.wen.common.enums.DeleteEnum;
-import com.wen.common.enums.StatusEnum;
+import com.wen.common.enums.UserDeleteEnum;
+import com.wen.common.enums.UserStatusEnum;
 import com.wen.module.auth.domain.vo.PhoneLoginRequest;
 import com.wen.common.constant.AuthConstants;
 import com.wen.module.auth.domain.entity.SmsCode;
@@ -176,10 +176,10 @@ public class PhoneServiceImpl implements PhoneService {
         UserInfoVo userInfoVo = userService.queryByPhone(phone);
         // 用户存在，则直接组装返回
         if (userInfoVo != null) {
-            if (userInfoVo.getStatus() == StatusEnum.DISABLED.getCode()) {
+            if (userInfoVo.getStatus() == UserStatusEnum.DISABLED.getCode()) {
                 throw new BusinessException("该账号 [" + phone + "] 已被禁用");
             }
-            if (userInfoVo.getDeleted() == DeleteEnum.DELETED.getCode()) {
+            if (userInfoVo.getDeleted() == UserDeleteEnum.DELETED.getCode()) {
                 throw new BusinessException("该账号 [" + phone + "] 已被注销");
             }
             return userInfoVo;

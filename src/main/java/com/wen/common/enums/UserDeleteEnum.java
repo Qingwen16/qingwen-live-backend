@@ -4,21 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 用户状态枚举
+ * 用户删除状态枚举
+ * @author jwruan
  */
 @AllArgsConstructor
 @Getter
-public enum StatusEnum {
+public enum UserDeleteEnum {
 
     /**
-     * 禁用（封号、违规等），正常（可正常使用所有功能）
+     * 用户信息的状态
      */
-    DISABLED(0, "禁用"),
+    DELETED(0, "已注销"),
 
-    NORMAL(1, "正常");
+    ACTIVE(1, "未注销");
 
     private final int code;
 
     private final String desc;
-
 }
