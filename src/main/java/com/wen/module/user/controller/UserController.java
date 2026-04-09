@@ -1,7 +1,7 @@
 package com.wen.module.user.controller;
 
 import com.wen.common.response.Response;
-import com.wen.module.user.domain.vo.UserInfoDto;
+import com.wen.module.user.domain.vo.UserInfoVo;
 import com.wen.module.user.domain.vo.UserQueryRequest;
 import com.wen.module.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +24,14 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/queryUserByCondition")
-    public Response<List<UserInfoDto>> queryUserByCondition(@RequestBody UserQueryRequest request) {
-        List<UserInfoDto> response = userService.queryUserByCondition(request);
+    public Response<List<UserInfoVo>> queryUserByCondition(@RequestBody UserQueryRequest request) {
+        List<UserInfoVo> response = userService.queryUserByCondition(request);
         return Response.success(response);
     }
 
     @GetMapping("/queryByPhone")
-    public Response<UserInfoDto> queryByPhone(@Param("phone") String phone) {
-        UserInfoDto response = userService.queryByPhone(phone);
+    public Response<UserInfoVo> queryByPhone(@Param("phone") String phone) {
+        UserInfoVo response = userService.queryByPhone(phone);
         return Response.success(response);
     }
 

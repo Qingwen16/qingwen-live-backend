@@ -1,7 +1,7 @@
 package com.wen.module.user.controller;
 
 import com.wen.common.response.Response;
-import com.wen.module.user.domain.vo.UserRoleDto;
+import com.wen.module.user.domain.vo.UserRoleVo;
 import com.wen.module.user.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
@@ -26,8 +26,8 @@ public class RoleController {
      * 查询用户角色
      */
     @GetMapping("/query")
-    public Response<List<UserRoleDto>> queryRole(@Param("type") List<Integer> types) {
-        List<UserRoleDto> response = roleService.queryRole(types);
+    public Response<List<UserRoleVo>> queryRole(@Param("type") List<Integer> types) {
+        List<UserRoleVo> response = roleService.queryRole(types);
         return Response.success(response);
     }
 

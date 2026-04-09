@@ -7,7 +7,7 @@ import com.wen.common.enums.StatusEnum;
 import com.wen.module.auth.domain.vo.PhoneLoginRequest;
 import com.wen.common.constant.AuthConstants;
 import com.wen.module.auth.domain.entity.SmsCode;
-import com.wen.module.auth.domain.vo.TokenDto;
+import com.wen.module.auth.domain.vo.TokenInfo;
 import com.wen.module.auth.mapper.SmsCodeMapper;
 import com.wen.module.auth.service.PhoneService;
 import com.wen.common.exception.BusinessException;
@@ -15,8 +15,7 @@ import com.wen.common.generator.JwtTokenGenerator;
 import com.wen.common.generator.SmsCodeGenerator;
 import com.wen.module.auth.service.CacheService;
 import com.wen.module.auth.domain.vo.SmsCodeRequest;
-import com.wen.module.user.domain.vo.UserInfoDto;
-import com.wen.module.user.domain.vo.UserInfoResponse;
+import com.wen.module.user.domain.vo.UserInfoVo;
 import com.wen.module.user.service.UserService;
 import com.wen.utils.UserInfoContext;
 import lombok.RequiredArgsConstructor;
@@ -106,7 +105,7 @@ public class PhoneServiceImpl implements PhoneService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UserInfoResponse loginByPhone(PhoneLoginRequest request) {
+    public com.wen.module.user.domain.vo.UserTokenVo loginByPhone(PhoneLoginRequest request) {
         String phone = request.getPhone();
         String code = request.getCode();
         String ip = request.getIp();
@@ -115,18 +114,18 @@ public class PhoneServiceImpl implements PhoneService {
         // 2. 验证验证码
         verifyCode(phone, code, ip);
         // 3. 查询用户
-        UserInfoDto user = buildUserInfoDto(phone);
+        UserInfoVo user = buildUserInfoDto(phone);
         // 4. 登录成功，将用户信息存入本地
         UserInfoContext.setUserInfo(user);
         // 5. 生成 Token
-        TokenDto tokenDto = jwtTokenGenerator.generateToken(user.getUserId());
+        TokenInfo tokenInfo = jwtTokenGenerator.generateToken(user.getUserId());
         // 6. 缓存 Token
-        cacheService.setUserToken(user.getUserId(), tokenDto.getToken(),
+        cacheService.setUserToken(user.getUserId(), tokenInfo.getToken(),
                 jwtTokenGenerator.getTokenTimeout());
         // 5. 构建响应
-        UserInfoResponse response = new UserInfoResponse();
-        response.setUserInfoDto(user);
-        response.setTokenDto(tokenDto);
+        com.wen.module.user.domain.vo.UserTokenVo response = new com.wen.module.user.domain.vo.UserTokenVo();
+        response.setUserInfoVo(user);
+        response.setTokenInfo(tokenInfo);
         return response;
     }
 
@@ -173,17 +172,17 @@ public class PhoneServiceImpl implements PhoneService {
     /**
      * 查询用户信息
      */
-    private UserInfoDto buildUserInfoDto(String phone) {
-        UserInfoDto userInfoDto = userService.queryByPhone(phone);
+    private UserInfoVo buildUserInfoDto(String phone) {
+        UserInfoVo userInfoVo = userService.queryByPhone(phone);
         // 用户存在，则直接组装返回
-        if (userInfoDto != null) {
-            if (userInfoDto.getStatus() == StatusEnum.DISABLED.getCode()) {
+        if (userInfoVo != null) {
+            if (userInfoVo.getStatus() == StatusEnum.DISABLED.getCode()) {
                 throw new BusinessException("该账号 [" + phone + "] 已被禁用");
             }
-            if (userInfoDto.getDeleted() == DeleteEnum.DELETED.getCode()) {
+            if (userInfoVo.getDeleted() == DeleteEnum.DELETED.getCode()) {
                 throw new BusinessException("该账号 [" + phone + "] 已被注销");
             }
-            return userInfoDto;
+            return userInfoVo;
         }
         // 用户不存在，注册用户
         return userService.registerUser(phone);

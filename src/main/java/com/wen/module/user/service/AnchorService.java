@@ -1,7 +1,7 @@
 package com.wen.module.user.service;
 
 import com.wen.module.user.domain.entity.AnchorInfo;
-import com.wen.module.user.domain.vo.AnchorInfoDto;
+import com.wen.module.user.domain.vo.AnchorInfoVo;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public interface AnchorService {
     /**
      * 注册主播
      */
-    String registerAnchor(AnchorInfoDto anchorInfoDto);
+    String registerAnchor(AnchorInfoVo anchorInfoVo);
 
     /**
      * 根据用户ID查询主播信息
@@ -24,6 +24,6 @@ public interface AnchorService {
     /**
      * 批量查询主播信息
      */
-    List<AnchorInfoDto> queryAnchor();
+    List<AnchorInfoVo> queryAnchor();
 
 }

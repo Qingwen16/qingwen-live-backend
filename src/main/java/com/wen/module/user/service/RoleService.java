@@ -1,6 +1,6 @@
 package com.wen.module.user.service;
 
-import com.wen.module.user.domain.vo.UserRoleDto;
+import com.wen.module.user.domain.vo.UserRoleVo;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public interface RoleService {
     /**
      * 根据类型查询所用角色
      */
-    List<UserRoleDto> queryRole(List<Integer> types);
+    List<UserRoleVo> queryRole(List<Integer> types);
 
     /**
      * 设置超级管理员

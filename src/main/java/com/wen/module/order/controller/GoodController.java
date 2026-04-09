@@ -2,7 +2,7 @@ package com.wen.module.order.controller;
 
 import com.wen.common.response.Response;
 import com.wen.module.order.domain.vo.GoodCreateRequest;
-import com.wen.module.order.domain.vo.GoodInfoDto;
+import com.wen.module.order.domain.vo.GoodInfoVo;
 import com.wen.module.order.domain.vo.GoodUpdateRequest;
 import com.wen.module.order.service.GoodService;
 import lombok.RequiredArgsConstructor;
@@ -53,8 +53,8 @@ public class GoodController {
      * 获取所有可购买商品列表
      */
     @GetMapping("/queryTotalGoods")
-    public Response<List<GoodInfoDto>> queryTotalGoods() {
-        List<GoodInfoDto> goods = goodService.queryTotalGoods();
+    public Response<List<GoodInfoVo>> queryTotalGoods() {
+        List<GoodInfoVo> goods = goodService.queryTotalGoods();
         return Response.success(goods);
     }
 
@@ -62,8 +62,8 @@ public class GoodController {
      * 获取所有上架商品列表
      */
     @GetMapping("/queryTotalListedGoods")
-    public Response<List<GoodInfoDto>> queryTotalListedGoods() {
-        List<GoodInfoDto> goods = goodService.queryTotalListedGoods();
+    public Response<List<GoodInfoVo>> queryTotalListedGoods() {
+        List<GoodInfoVo> goods = goodService.queryTotalListedGoods();
         return Response.success(goods);
     }
 

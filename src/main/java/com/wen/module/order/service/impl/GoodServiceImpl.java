@@ -6,7 +6,7 @@ import com.wen.common.enums.GoodStatusEnum;
 import com.wen.common.exception.BusinessException;
 import com.wen.module.order.domain.vo.GoodCreateRequest;
 import com.wen.module.order.domain.entity.GoodInfo;
-import com.wen.module.order.domain.vo.GoodInfoDto;
+import com.wen.module.order.domain.vo.GoodInfoVo;
 import com.wen.module.order.mapper.GoodInfoMapper;
 import com.wen.module.order.domain.vo.GoodUpdateRequest;
 import com.wen.module.order.service.GoodService;
@@ -79,14 +79,14 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    public List<GoodInfoDto> queryTotalGoods() {
+    public List<GoodInfoVo> queryTotalGoods() {
         LambdaQueryWrapper<GoodInfo> wrapper = new LambdaQueryWrapper<>();
         wrapper.orderByDesc(GoodInfo::getCreateTime);
         List<GoodInfo> infoList = goodInfoMapper.selectList(wrapper);
 
-        List<GoodInfoDto> dtoList = new ArrayList<>();
+        List<GoodInfoVo> dtoList = new ArrayList<>();
         for (GoodInfo goodInfo : infoList) {
-            GoodInfoDto dto = new GoodInfoDto();
+            GoodInfoVo dto = new GoodInfoVo();
             BeanUtils.copyProperties(goodInfo, dto);
             dtoList.add(dto);
         }
@@ -96,15 +96,15 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    public List<GoodInfoDto> queryTotalListedGoods() {
+    public List<GoodInfoVo> queryTotalListedGoods() {
         LambdaQueryWrapper<GoodInfo> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(GoodInfo::getStatus, GoodStatusEnum.LISTED.getCode());
         wrapper.orderByDesc(GoodInfo::getCreateTime);
         List<GoodInfo> infoList = goodInfoMapper.selectList(wrapper);
 
-        List<GoodInfoDto> dtoList = new ArrayList<>();
+        List<GoodInfoVo> dtoList = new ArrayList<>();
         for (GoodInfo goodInfo : infoList) {
-            GoodInfoDto dto = new GoodInfoDto();
+            GoodInfoVo dto = new GoodInfoVo();
             BeanUtils.copyProperties(goodInfo, dto);
             dtoList.add(dto);
         }

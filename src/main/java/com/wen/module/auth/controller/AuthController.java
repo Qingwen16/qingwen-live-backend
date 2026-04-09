@@ -4,12 +4,11 @@ package com.wen.module.auth.controller;
 import com.wen.common.response.Response;
 import com.wen.module.auth.domain.vo.PhoneLoginRequest;
 import com.wen.module.auth.domain.vo.SmsCodeRequest;
-import com.wen.module.auth.domain.vo.TokenDto;
+import com.wen.module.auth.domain.vo.TokenInfo;
 import com.wen.module.auth.domain.vo.WechatLoginRequest;
 import com.wen.module.auth.service.AuthService;
 import com.wen.module.auth.service.PhoneService;
 import com.wen.module.auth.service.WechatService;
-import com.wen.module.user.domain.vo.UserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,8 +41,8 @@ public class AuthController {
      * 手机号验证码登录
      */
     @PostMapping("/phone/login")
-    public Response<UserInfoResponse> phoneLogin(@RequestBody PhoneLoginRequest request) {
-        UserInfoResponse response = phoneService.loginByPhone(request);
+    public Response<com.wen.module.user.domain.vo.UserTokenVo> phoneLogin(@RequestBody PhoneLoginRequest request) {
+        com.wen.module.user.domain.vo.UserTokenVo response = phoneService.loginByPhone(request);
         return Response.success(response);
     }
 
@@ -51,8 +50,8 @@ public class AuthController {
      * 微信一键获取手机号登录
      */
     @PostMapping("/wechat/login")
-    public Response<UserInfoResponse> weChatLogin(@RequestBody WechatLoginRequest request) {
-        UserInfoResponse response = weChatService.loginByWeChat(request);
+    public Response<com.wen.module.user.domain.vo.UserTokenVo> weChatLogin(@RequestBody WechatLoginRequest request) {
+        com.wen.module.user.domain.vo.UserTokenVo response = weChatService.loginByWeChat(request);
         return Response.success(response);
     }
         
@@ -60,7 +59,7 @@ public class AuthController {
      * 登出
      */
     @GetMapping("/logout")
-    public Response<Void> logout(TokenDto request) {
+    public Response<Void> logout(TokenInfo request) {
         authService.logout(request);
         return Response.success(null, "登出成功");
     }

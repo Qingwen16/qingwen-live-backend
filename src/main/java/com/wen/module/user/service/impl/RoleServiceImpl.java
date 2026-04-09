@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.wen.common.constant.AuthConstants;
 import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.exception.BusinessException;
-import com.wen.module.user.domain.vo.UserRoleDto;
+import com.wen.module.user.domain.vo.UserRoleVo;
 import com.wen.module.user.mapper.UserRoleMapper;
 import com.wen.module.user.domain.entity.UserRole;
 import com.wen.module.user.service.RoleService;
@@ -32,7 +32,7 @@ public class RoleServiceImpl implements RoleService {
     private final UserRoleMapper userRoleMapper;
 
     @Override
-    public List<UserRoleDto> queryRole(List<Integer> types) {
+    public List<UserRoleVo> queryRole(List<Integer> types) {
         log.info("根据类型 [{}] 查询用户角色信息", types);
         if (CollectionUtils.isEmpty(types)) {
             return Collections.emptyList();
@@ -41,9 +41,9 @@ public class RoleServiceImpl implements RoleService {
         wrapper.in(UserRole::getRole, types);
         List<UserRole> userRoles = userRoleMapper.selectList(wrapper);
 
-        List<UserRoleDto> dtoList = new ArrayList<>();
+        List<UserRoleVo> dtoList = new ArrayList<>();
         for (UserRole userRole : userRoles) {
-            UserRoleDto dto = new UserRoleDto();
+            UserRoleVo dto = new UserRoleVo();
             BeanUtil.copyProperties(userRole, dto);
             dtoList.add(dto);
         }

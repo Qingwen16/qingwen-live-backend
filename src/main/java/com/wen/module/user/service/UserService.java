@@ -2,7 +2,7 @@ package com.wen.module.user.service;
 
 import com.wen.module.user.domain.vo.UserQueryRequest;
 import com.wen.module.user.domain.entity.UserInfo;
-import com.wen.module.user.domain.vo.UserInfoDto;
+import com.wen.module.user.domain.vo.UserInfoVo;
 
 import java.util.List;
 import java.util.Set;
@@ -18,17 +18,17 @@ public interface UserService {
     /**
      * 用户注册（手机等第三方注册）
      */
-    UserInfoDto registerUser(String phone);
+    UserInfoVo registerUser(String phone);
 
     /**
      * 根据 查询条件 获取用户信息
      */
-    List<UserInfoDto> queryUserByCondition(UserQueryRequest request);
+    List<UserInfoVo> queryUserByCondition(UserQueryRequest request);
 
     /**
      * 根据 手机号 获取用户信息
      */
-    UserInfoDto queryByPhone(String phone);
+    UserInfoVo queryByPhone(String phone);
 
     /**
      * 根据 用户ID 获取用户信息

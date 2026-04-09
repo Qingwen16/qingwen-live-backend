@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * @date : 2026-04-08
  */
 @Data
-public class AnchorInfoDto {
+public class AnchorInfoVo {
 
     /**
      * 用户ID

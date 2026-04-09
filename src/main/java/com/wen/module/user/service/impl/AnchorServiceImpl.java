@@ -6,8 +6,8 @@ import com.wen.common.enums.StatusEnum;
 import com.wen.common.exception.BusinessException;
 import com.wen.module.user.domain.entity.AnchorInfo;
 import com.wen.module.user.domain.entity.UserInfo;
-import com.wen.module.user.domain.vo.AnchorInfoDto;
-import com.wen.module.user.domain.vo.UserInfoDto;
+import com.wen.module.user.domain.vo.AnchorInfoVo;
+import com.wen.module.user.domain.vo.UserInfoVo;
 import com.wen.module.user.mapper.AnchorInfoMapper;
 import com.wen.module.user.service.AnchorService;
 import com.wen.module.user.service.UserService;
@@ -35,11 +35,11 @@ public class AnchorServiceImpl implements AnchorService {
     private final AnchorInfoMapper anchorInfoMapper;
 
     @Override
-    public String registerAnchor(AnchorInfoDto request) {
+    public String registerAnchor(AnchorInfoVo request) {
         if (request.getPhone() == null) {
             throw new BusinessException("注册手机号不能为空");
         }
-        UserInfoDto userInfo = userService.registerUser(request.getPhone());
+        UserInfoVo userInfo = userService.registerUser(request.getPhone());
         if (userInfo.getStatus() == StatusEnum.DISABLED.getCode()) {
             return "该用户状态已被设置为禁用";
         }
@@ -87,18 +87,18 @@ public class AnchorServiceImpl implements AnchorService {
     }
 
     @Override
-    public List<AnchorInfoDto> queryAnchor() {
+    public List<AnchorInfoVo> queryAnchor() {
         LambdaQueryWrapper<AnchorInfo> wrapper = new LambdaQueryWrapper<>();
         List<AnchorInfo> anchorList = anchorInfoMapper.selectList(wrapper);
 
         Set<Long> userIdSet = anchorList.stream().map(AnchorInfo::getUserId).collect(Collectors.toSet());
         List<UserInfo> infoList = userService.queryByUserIdSet(userIdSet);
 
-        List<AnchorInfoDto> dtoList = new ArrayList<>();
+        List<AnchorInfoVo> dtoList = new ArrayList<>();
         for (UserInfo user : infoList) {
             for (AnchorInfo anchor : anchorList) {
                 if (user.getUserId().equals(anchor.getUserId())) {
-                    AnchorInfoDto dto = new AnchorInfoDto();
+                    AnchorInfoVo dto = new AnchorInfoVo();
                     dto.setUserId(user.getUserId());
                     dto.setPhone(user.getPhone());
                     dto.setNickname(anchor.getNickname());

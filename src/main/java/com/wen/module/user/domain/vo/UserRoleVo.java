@@ -7,7 +7,7 @@ import lombok.Data;
  * @date : 2026-04-08
  */
 @Data
-public class UserRoleDto {
+public class UserRoleVo {
 
     /**
      * 用户ID

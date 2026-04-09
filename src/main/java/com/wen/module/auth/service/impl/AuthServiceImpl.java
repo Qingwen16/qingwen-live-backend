@@ -1,6 +1,6 @@
 package com.wen.module.auth.service.impl;
 
-import com.wen.module.auth.domain.vo.TokenDto;
+import com.wen.module.auth.domain.vo.TokenInfo;
 import com.wen.module.auth.service.AuthService;
 import com.wen.module.auth.service.CacheService;
 import com.wen.common.generator.JwtTokenGenerator;
@@ -28,9 +28,9 @@ public class AuthServiceImpl implements AuthService {
      * 用户登出
      */
     @Override
-    public void logout(TokenDto tokenDto) {
+    public void logout(TokenInfo tokenInfo) {
         // 1. 参数校验
-        String requestToken = tokenDto.getToken();
+        String requestToken = tokenInfo.getToken();
         if (requestToken == null || requestToken.isEmpty()) {
             UserInfoContext.clear();
             return;

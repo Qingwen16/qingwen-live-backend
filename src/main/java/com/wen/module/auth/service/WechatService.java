@@ -2,7 +2,7 @@ package com.wen.module.auth.service;
 
 
 import com.wen.module.auth.domain.vo.WechatLoginRequest;
-import com.wen.module.user.domain.vo.UserInfoResponse;
+import com.wen.module.user.domain.vo.UserTokenVo;
 
 /**
  * @author : rjw
@@ -13,6 +13,6 @@ public interface WechatService {
     /**
      * 处理登录请求
      */
-    UserInfoResponse loginByWeChat(WechatLoginRequest request);
+    UserTokenVo loginByWeChat(WechatLoginRequest request);
 
 }

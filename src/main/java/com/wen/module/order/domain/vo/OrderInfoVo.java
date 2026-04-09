@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * @date : 2026-04-08
  */
 @Data
-public class OrderInfoDto {
+public class OrderInfoVo {
     /**
      * 订单号
      */

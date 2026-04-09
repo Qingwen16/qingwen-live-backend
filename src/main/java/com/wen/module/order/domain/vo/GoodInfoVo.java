@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  * @date : 2026-04-08
  */
 @Data
-public class GoodInfoDto {
+public class GoodInfoVo {
     /**
      * 货物ID
      */

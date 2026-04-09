@@ -1,6 +1,6 @@
 package com.wen.common.generator;
 
-import com.wen.module.auth.domain.vo.TokenDto;
+import com.wen.module.auth.domain.vo.TokenInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.Data;
@@ -39,7 +39,7 @@ public class JwtTokenGenerator {
     /**
      * 生成 Token
      */
-    public TokenDto generateToken(Long userId) {
+    public TokenInfo generateToken(Long userId) {
         SecretKey key = createSecretKey();
 
         // 生成 Token，包含 userId 和唯一的 JTI
@@ -54,9 +54,9 @@ public class JwtTokenGenerator {
                 .signWith(key)
                 .compact();
 
-        TokenDto tokenDto = new TokenDto();
-        tokenDto.setToken(token);
-        return tokenDto;
+        TokenInfo tokenInfo = new TokenInfo();
+        tokenInfo.setToken(token);
+        return tokenInfo;
     }
 
     /**

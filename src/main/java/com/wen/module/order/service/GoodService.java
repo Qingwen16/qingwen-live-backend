@@ -1,7 +1,7 @@
 package com.wen.module.order.service;
 
 import com.wen.module.order.domain.vo.GoodCreateRequest;
-import com.wen.module.order.domain.vo.GoodInfoDto;
+import com.wen.module.order.domain.vo.GoodInfoVo;
 import com.wen.module.order.domain.vo.GoodUpdateRequest;
 import com.wen.module.order.domain.entity.GoodInfo;
 
@@ -36,12 +36,12 @@ public interface GoodService {
     /**
      * 获取所有商品
      */
-    List<GoodInfoDto> queryTotalGoods();
+    List<GoodInfoVo> queryTotalGoods();
 
     /**
      * 获取所有上架商品列表
      */
-    List<GoodInfoDto> queryTotalListedGoods();
+    List<GoodInfoVo> queryTotalListedGoods();
 
     /**
      * 扣减库存

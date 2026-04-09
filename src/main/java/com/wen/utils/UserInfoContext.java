@@ -1,7 +1,7 @@
 package com.wen.utils;
 
 
-import com.wen.module.user.domain.vo.UserInfoDto;
+import com.wen.module.user.domain.vo.UserInfoVo;
 
 /**
  * 用户上下文工具类
@@ -12,13 +12,13 @@ public class UserInfoContext {
     /**
      * 当前登录用户（null 表示游客）
      */
-    private static final ThreadLocal<UserInfoDto> CURRENT_USER = new ThreadLocal<>();
+    private static final ThreadLocal<UserInfoVo> CURRENT_USER = new ThreadLocal<>();
 
     /**
      * 设置当前登录用户
      * @param userInfo 用户
      */
-    public static void setUserInfo(UserInfoDto userInfo) {
+    public static void setUserInfo(UserInfoVo userInfo) {
         CURRENT_USER.set(userInfo);
     }
 
@@ -26,7 +26,7 @@ public class UserInfoContext {
      * 获取当前登录用户
      * @return 用户，如果是游客返回 null
      */
-    public static UserInfoDto getUserInfo() {
+    public static UserInfoVo getUserInfo() {
         return CURRENT_USER.get();
     }
 

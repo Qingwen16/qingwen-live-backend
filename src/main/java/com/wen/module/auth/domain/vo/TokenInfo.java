@@ -8,7 +8,7 @@ import lombok.Data;
  * @date : 2026-03-19
  */
 @Data
-public class TokenDto {
+public class TokenInfo {
 
     /**
      * JWT Token (7天有效期)

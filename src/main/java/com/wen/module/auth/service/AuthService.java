@@ -1,6 +1,6 @@
 package com.wen.module.auth.service;
 
-import com.wen.module.auth.domain.vo.TokenDto;
+import com.wen.module.auth.domain.vo.TokenInfo;
 
 /**
  * 认证服务接口 - 单令牌模式
@@ -13,6 +13,6 @@ public interface AuthService {
     /**
      * 用户登出
      */
-    void logout(TokenDto tokenDto);
+    void logout(TokenInfo tokenInfo);
 
 }

@@ -7,7 +7,7 @@ import lombok.Data;
  * @date : 2026-03-18
  */
 @Data
-public class UserInfoDto {
+public class UserInfoVo {
 
     /**
      * 用户唯一标识（10 位数字，类似 QQ 号）

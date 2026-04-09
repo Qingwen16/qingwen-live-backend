@@ -2,13 +2,12 @@ package com.wen.module.auth.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
-import com.wen.module.auth.domain.vo.TokenDto;
+import com.wen.module.auth.domain.vo.TokenInfo;
 import com.wen.module.auth.domain.vo.WechatLoginRequest;
 import com.wen.common.constant.AuthConstants;
 import com.wen.common.exception.BusinessException;
 import com.wen.common.generator.JwtTokenGenerator;
-import com.wen.module.user.domain.vo.UserInfoDto;
-import com.wen.module.user.domain.vo.UserInfoResponse;
+import com.wen.module.user.domain.vo.UserInfoVo;
 import com.wen.module.user.service.UserService;
 import com.wen.utils.UserInfoContext;
 import com.wen.utils.WechatUtils;
@@ -42,7 +41,7 @@ public class WechatServiceImpl implements WechatService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UserInfoResponse loginByWeChat(WechatLoginRequest request) {
+    public com.wen.module.user.domain.vo.UserTokenVo loginByWeChat(WechatLoginRequest request) {
         // 1. 参数校验
         validateParams(request);
         
@@ -62,7 +61,7 @@ public class WechatServiceImpl implements WechatService {
         }
         
         // 5. 查询或注册用户
-        UserInfoDto user = userService.registerUser(phone);
+        UserInfoVo user = userService.registerUser(phone);
         if (user == null) {
             throw new BusinessException("用户注册失败");
         }
@@ -74,16 +73,16 @@ public class WechatServiceImpl implements WechatService {
         UserInfoContext.setUserInfo(user);
         
         // 7. 生成 Token
-        TokenDto tokenDto = jwtTokenGenerator.generateToken(user.getUserId());
+        TokenInfo tokenInfo = jwtTokenGenerator.generateToken(user.getUserId());
         
         // 8. 缓存 Token
-        cacheService.setUserToken(user.getUserId(), tokenDto.getToken(),
+        cacheService.setUserToken(user.getUserId(), tokenInfo.getToken(),
                 jwtTokenGenerator.getTokenTimeout());
         
         // 9. 构建响应
-        UserInfoResponse response = new UserInfoResponse();
-        response.setUserInfoDto(user);
-        response.setTokenDto(tokenDto);
+        com.wen.module.user.domain.vo.UserTokenVo response = new com.wen.module.user.domain.vo.UserTokenVo();
+        response.setUserInfoVo(user);
+        response.setTokenDto(tokenInfo);
         
         log.info("微信登录成功: userId={}, phone={}", user.getUserId(), phone);
         return response;

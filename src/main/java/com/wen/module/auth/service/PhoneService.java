@@ -2,7 +2,7 @@ package com.wen.module.auth.service;
 
 import com.wen.module.auth.domain.vo.PhoneLoginRequest;
 import com.wen.module.auth.domain.vo.SmsCodeRequest;
-import com.wen.module.user.domain.vo.UserInfoResponse;
+import com.wen.module.user.domain.vo.UserTokenVo;
 
 /**
  * 登录处理器接口
@@ -18,7 +18,7 @@ public interface PhoneService {
     /**
      * 处理登录请求
      */
-    UserInfoResponse loginByPhone(PhoneLoginRequest request);
+    UserTokenVo loginByPhone(PhoneLoginRequest request);
 
 
 }

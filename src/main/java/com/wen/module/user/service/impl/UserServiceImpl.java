@@ -8,7 +8,7 @@ import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.enums.StatusEnum;
 import com.wen.common.exception.BusinessException;
 import com.wen.common.generator.UserIdGenerator;
-import com.wen.module.user.domain.vo.UserInfoDto;
+import com.wen.module.user.domain.vo.UserInfoVo;
 import com.wen.module.user.mapper.UserRoleMapper;
 import com.wen.module.user.domain.vo.UserQueryRequest;
 import com.wen.module.user.domain.entity.UserInfo;
@@ -46,12 +46,12 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UserInfoDto registerUser(String phone) {
-        UserInfoDto userInfoDto = queryByPhone(phone);
+    public UserInfoVo registerUser(String phone) {
+        UserInfoVo userInfoVo = queryByPhone(phone);
         // 1. 存在信息直接返回
-        if (userInfoDto != null) {
-            log.info("手机号注册，该用户存在用户信息: {}", userInfoDto);
-            return userInfoDto;
+        if (userInfoVo != null) {
+            log.info("手机号注册，该用户存在用户信息: {}", userInfoVo);
+            return userInfoVo;
         }
         // 2. 新用户自动注册
         log.info("手机号用户注册：{}", phone);
@@ -76,13 +76,13 @@ public class UserServiceImpl implements UserService {
         userRoleMapper.insert(userRole);
         log.info("手机号用户注册成功：createUser={}", userInfo);
         // 4. 构建返回类型
-        UserInfoDto response = new UserInfoDto();
+        UserInfoVo response = new UserInfoVo();
         BeanUtil.copyProperties(userInfo, response);
         return response;
     }
 
     @Override
-    public List<UserInfoDto> queryUserByCondition(UserQueryRequest request) {
+    public List<UserInfoVo> queryUserByCondition(UserQueryRequest request) {
         // 构建查询条件
         LambdaQueryWrapper<UserInfo> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(!StrUtil.isEmpty(request.getUsername()), UserInfo::getUsername, request.getUsername())
@@ -98,9 +98,9 @@ public class UserServiceImpl implements UserService {
         List<UserInfo> userInfoList = userInfoMapper.selectList(wrapper);
 
         // 转换为 DTO
-        List<UserInfoDto> dtoList = new ArrayList<>();
+        List<UserInfoVo> dtoList = new ArrayList<>();
         for (UserInfo userInfo : userInfoList) {
-            UserInfoDto dto = new UserInfoDto();
+            UserInfoVo dto = new UserInfoVo();
             BeanUtils.copyProperties(userInfo, dto);
             dtoList.add(dto);
         }
@@ -110,13 +110,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoDto queryByPhone(String phone) {
+    public UserInfoVo queryByPhone(String phone) {
         if (phone == null || phone.isEmpty()) {
             throw new BusinessException("输入参数不能为空");
         }
         UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
                 .eq(UserInfo::getPhone, phone));
-        UserInfoDto response = new UserInfoDto();
+        UserInfoVo response = new UserInfoVo();
         BeanUtil.copyProperties(userInfo, response);
         log.info("根据手机号 [{}] 查询用户成功 [{}]", phone, response);
         return response;
