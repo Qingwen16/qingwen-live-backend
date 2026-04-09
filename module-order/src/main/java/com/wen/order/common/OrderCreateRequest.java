@@ -1,24 +1,15 @@
-package com.wen.order.entity;
+package com.wen.order.common;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 /**
- * 订单信息实体类
  * @author : rjw
- * @date : 2026-04-08
+ * @date : 2026-04-09
  */
 @Data
-@TableName("order_info")
-public class OrderInfo {
-    /**
-     * 订单号
-     */
-    private String orderNo;
+public class OrderCreateRequest {
     /**
      * 用户ID
      */
@@ -51,8 +42,4 @@ public class OrderInfo {
      * 备注
      */
     private String remark;
-    /**
-     * 创建时间
-     */
-    private Long createTime;
 }

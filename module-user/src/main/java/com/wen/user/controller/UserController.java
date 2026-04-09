@@ -1,12 +1,14 @@
 package com.wen.user.controller;
 
-import com.wen.common.exception.BusinessException;
 import com.wen.common.model.response.Response;
 import com.wen.common.model.user.UserInfoDto;
+import com.wen.user.common.UserQueryRequest;
 import com.wen.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 用户信息控制器
@@ -21,25 +23,17 @@ public class UserController {
 
     private UserService userService;
 
-    /**
-     * 获取用户信息
-     */
+    @PostMapping("/queryUserByCondition")
+    public Response<List<UserInfoDto>> queryUserByCondition(@RequestBody UserQueryRequest request) {
+        List<UserInfoDto> response = userService.queryUserByCondition(request);
+        return Response.success(response);
+    }
+
     @GetMapping("/queryByPhone")
     public Response<UserInfoDto> queryByPhone(@Param("phone") String phone) {
-        if (phone == null || phone.isEmpty()) {
-            throw new BusinessException("输入参数不能为空");
-        }
         UserInfoDto response = userService.queryByPhone(phone);
         return Response.success(response);
     }
 
-    @GetMapping("/queryByUserId")
-    public Response<UserInfoDto> queryByUserId(@Param("userId") Long userId) {
-        if (userId == null) {
-            throw new BusinessException("输入参数不能为空");
-        }
-        UserInfoDto response = userService.queryByUserId(userId);
-        return Response.success(response);
-    }
 
 }

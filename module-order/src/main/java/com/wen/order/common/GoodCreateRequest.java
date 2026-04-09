@@ -1,21 +1,15 @@
-package com.wen.common.model.order;
+package com.wen.order.common;
 
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 /**
- * 货物信息实体类
- *
  * @author : rjw
  * @date : 2026-04-08
  */
 @Data
-public class GoodInfoDto {
-    /**
-     * 货物ID
-     */
-    private Long id;
+public class GoodCreateRequest {
     /**
      * 货物代码
      */
@@ -33,6 +27,10 @@ public class GoodInfoDto {
      */
     private BigDecimal price;
     /**
+     * 库存数量
+     */
+    private Integer stock;
+    /**
      * 货物单位
      */
     private String unit;
@@ -45,27 +43,15 @@ public class GoodInfoDto {
      */
     private String imageUrl;
     /**
-     * 货物状态：0-已下架，1-已上架，2-缺货
+     * 供应商ID
      */
-    private Integer status;
+    private Long supplierId;
     /**
-     * 库存数量
+     * 供应商名称
      */
-    private Integer stockCount;
-    /**
-     * 销售数量
-     */
-    private Integer salesCount;
+    private String supplierName;
     /**
      * 备注
      */
     private String remark;
-    /**
-     * 创建时间
-     */
-    private Long createTime;
-    /**
-     * 更新时间
-     */
-    private Long updateTime;
 }

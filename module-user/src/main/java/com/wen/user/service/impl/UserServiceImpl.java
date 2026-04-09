@@ -1,13 +1,16 @@
 package com.wen.user.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.wen.common.constant.RoleTypeEnum;
+import com.wen.common.exception.BusinessException;
 import com.wen.common.generator.UserIdGenerator;
 import com.wen.common.model.user.UserInfoDto;
 import com.wen.common.constant.DeleteEnum;
 import com.wen.common.constant.StatusEnum;
 import com.wen.common.model.user.UserRoleDto;
+import com.wen.user.common.UserQueryRequest;
 import com.wen.user.entity.UserInfo;
 import com.wen.user.entity.UserRole;
 import com.wen.user.mapper.UserInfoMapper;
@@ -15,13 +18,17 @@ import com.wen.user.mapper.UserRoleMapper;
 import com.wen.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @Author : 青灯文案
@@ -71,41 +78,59 @@ public class UserServiceImpl implements UserService {
         userRole.setUpdateTime(currentTime);
         userRoleMapper.insert(userRole);
         log.info("手机号用户注册成功：createUser={}", userInfo);
-        return buildUserInfoDto(userInfo);
-    }
-
-    /**
-     * 根据手机号查询用户信息
-     */
-    @Override
-    public UserInfoDto queryByPhone(String phone) {
-        UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
-                .eq(UserInfo::getPhone, phone));
-        log.info("根据手机号 [{}] 查询用户成功 [{}]", phone, userInfo);
-        return buildUserInfoDto(userInfo);
-    }
-
-    /**
-     * 根据用户ID查询用户信息
-     */
-    @Override
-    public UserInfoDto queryByUserId(Long userId) {
-        UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
-                .eq(UserInfo::getUserId, userId));
-        log.info("根据用户ID [{}] 查询用户成功 [{}]", userId, userInfo);
-        return buildUserInfoDto(userInfo);
-    }
-
-    /**
-     * 构建用户信息响应
-     */
-    private UserInfoDto buildUserInfoDto(UserInfo userInfo) {
-        if (userInfo == null) {
-            return null;
-        }
+        // 4. 构建返回类型
         UserInfoDto response = new UserInfoDto();
         BeanUtil.copyProperties(userInfo, response);
         return response;
+    }
+
+    @Override
+    public List<UserInfoDto> queryUserByCondition(UserQueryRequest request) {
+        // 构建查询条件
+        LambdaQueryWrapper<UserInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.like(!StrUtil.isEmpty(request.getUsername()), UserInfo::getUsername, request.getUsername())
+                .eq(!StrUtil.isEmpty(request.getPhone()), UserInfo::getPhone, request.getPhone())
+                .eq(request.getGender() != null, UserInfo::getGender, request.getGender())
+                .eq(!StrUtil.isEmpty(request.getCountry()), UserInfo::getCountry, request.getCountry())
+                .eq(!StrUtil.isEmpty(request.getProvince()), UserInfo::getProvince, request.getProvince())
+                .eq(!StrUtil.isEmpty(request.getCity()), UserInfo::getCity, request.getCity())
+                .eq(request.getStatus() != null, UserInfo::getStatus, request.getStatus())
+                .eq(request.getDeleted() != null, UserInfo::getDeleted, request.getDeleted())
+                .orderByDesc(UserInfo::getCreateTime);
+        // 查询用户列表
+        List<UserInfo> userInfoList = userInfoMapper.selectList(wrapper);
+
+        // 转换为 DTO
+        List<UserInfoDto> dtoList = new ArrayList<>();
+        for (UserInfo userInfo : userInfoList) {
+            UserInfoDto dto = new UserInfoDto();
+            BeanUtils.copyProperties(userInfo, dto);
+            dtoList.add(dto);
+        }
+
+        log.info("根据条件查询到的用户信息数量: [{}]", dtoList.size());
+        return dtoList;
+    }
+
+    @Override
+    public UserInfoDto queryByPhone(String phone) {
+        if (phone == null || phone.isEmpty()) {
+            throw new BusinessException("输入参数不能为空");
+        }
+        UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
+                .eq(UserInfo::getPhone, phone));
+        UserInfoDto response = new UserInfoDto();
+        BeanUtil.copyProperties(userInfo, response);
+        log.info("根据手机号 [{}] 查询用户成功 [{}]", phone, response);
+        return response;
+    }
+
+    @Override
+    public UserInfo queryByUserId(Long userId) {
+        UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
+                .eq(UserInfo::getUserId, userId));
+        log.info("根据用户ID [{}] 查询用户成功 [{}]", userId, userInfo);
+        return userInfo;
     }
 
     @Override

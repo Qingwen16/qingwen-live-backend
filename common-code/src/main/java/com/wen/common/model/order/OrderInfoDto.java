@@ -10,11 +10,6 @@ import java.math.BigDecimal;
  */
 @Data
 public class OrderInfoDto {
-
-    /**
-     * 订单ID
-     */
-    private Long id;
     /**
      * 订单号
      */
@@ -22,7 +17,7 @@ public class OrderInfoDto {
     /**
      * 用户ID
      */
-    private Long userId;
+    private String userName;
     /**
      * 用户手机号
      */

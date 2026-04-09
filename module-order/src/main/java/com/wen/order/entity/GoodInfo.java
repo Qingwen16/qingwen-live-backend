@@ -21,9 +21,9 @@ public class GoodInfo {
     @TableId(type = IdType.AUTO)
     private Long id;
     /**
-     * 货物编号
+     * 货物代码
      */
-    private String number;
+    private String code;
     /**
      * 货物名称
      */
@@ -37,10 +37,6 @@ public class GoodInfo {
      */
     private BigDecimal price;
     /**
-     * 库存数量
-     */
-    private Integer stock;
-    /**
      * 货物单位
      */
     private String unit;
@@ -53,17 +49,13 @@ public class GoodInfo {
      */
     private String imageUrl;
     /**
-     * 供应商ID
-     */
-    private Long supplierId;
-    /**
-     * 供应商名称
-     */
-    private String supplierName;
-    /**
      * 货物状态：0-已下架，1-已上架，2-缺货
      */
     private Integer status;
+    /**
+     * 库存数量
+     */
+    private Integer stockCount;
     /**
      * 销售数量
      */

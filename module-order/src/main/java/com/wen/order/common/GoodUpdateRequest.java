@@ -1,17 +1,15 @@
-package com.wen.common.model.order;
+package com.wen.order.common;
 
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 /**
- * 货物信息实体类
- *
  * @author : rjw
- * @date : 2026-04-08
+ * @date : 2026-04-09
  */
 @Data
-public class GoodInfoDto {
+public class GoodUpdateRequest {
     /**
      * 货物ID
      */
@@ -60,12 +58,4 @@ public class GoodInfoDto {
      * 备注
      */
     private String remark;
-    /**
-     * 创建时间
-     */
-    private Long createTime;
-    /**
-     * 更新时间
-     */
-    private Long updateTime;
 }

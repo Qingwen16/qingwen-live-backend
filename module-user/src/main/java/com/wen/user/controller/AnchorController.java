@@ -1,12 +1,9 @@
 package com.wen.user.controller;
 
-import com.wen.common.exception.BusinessException;
 import com.wen.common.model.response.Response;
 import com.wen.common.model.user.AnchorInfoDto;
-import com.wen.common.model.user.UserInfoDto;
 import com.wen.user.service.AnchorService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

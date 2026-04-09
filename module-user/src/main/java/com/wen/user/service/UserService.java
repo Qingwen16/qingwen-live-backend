@@ -1,6 +1,7 @@
 package com.wen.user.service;
 
 import com.wen.common.model.user.UserInfoDto;
+import com.wen.user.common.UserQueryRequest;
 import com.wen.user.entity.UserInfo;
 
 import java.util.List;
@@ -13,10 +14,16 @@ import java.util.Set;
  */
 public interface UserService {
 
+
     /**
      * 用户注册（手机等第三方注册）
      */
     UserInfoDto registerUser(String phone);
+
+    /**
+     * 根据 查询条件 获取用户信息
+     */
+    List<UserInfoDto> queryUserByCondition(UserQueryRequest request);
 
     /**
      * 根据 手机号 获取用户信息
@@ -26,11 +33,10 @@ public interface UserService {
     /**
      * 根据 用户ID 获取用户信息
      */
-    UserInfoDto queryByUserId(Long userId);
+    UserInfo queryByUserId(Long userId);
 
     /**
      * 根据用户ID批量查询用户信息
      */
     List<UserInfo> queryByUserIdSet(Set<Long> userIdSet);
-
 }
