@@ -11,7 +11,14 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/common-code/pom.xml" />
         <option value="$PROJECT_DIR$/module-anchor/pom.xml" />
+        <option value="$PROJECT_DIR$/module-auth/pom.xml" />
+        <option value="$PROJECT_DIR$/module-chat/pom.xml" />
+        <option value="$PROJECT_DIR$/module-order/pom.xml" />
+        <option value="$PROJECT_DIR$/module-room/pom.xml" />
+        <option value="$PROJECT_DIR$/module-user/pom.xml" />
+        <option value="$PROJECT_DIR$/service-start/pom.xml" />
       </set>
     </option>
   </component>
